@@ -1,4 +1,5 @@
-const KEY = 'rehabPro.v3';
+const KEY = 'rehabPro.v4';
+const OLD_KEYS = ['rehabPro.v3', 'rehabPro.v2'];
 const days = ['周日','周一','周二','周三','周四','周五','周六'];
 const dkey = ['sun','mon','tue','wed','thu','fri','sat'];
 const tabs = [['today','今日训练'],['timer','计时器'],['record','训练记录'],['report','周报'],['plan','完整计划'],['library','动作库'],['help','说明']];
@@ -46,6 +47,7 @@ const W = {
   reset:['基础重置','每天早上或训练前做，降代偿、顺呼吸',['breath','chin','cat','open','wallplus']],
   light:['轻恢复','不追求累，只恢复胸椎、呼吸和肩颈状态',['breath','cat','open','door','walk']],
   rest:['休息 / 散步','避免久坐，可轻松散步',['walk','breath']],
+  walk:['散步 + 基础重置','轻松散步，配合呼吸重置，不追求疲劳',['walk','breath','cat','open']],
   A0:['A0：颈肩肩胛降级版','降低斜方肌代偿',['breath','chin','wallplus','punch','pronew','door']],
   B0:['B0：核心臀腿降级版','核心和臀部开始工作，减少腰代偿',['breath','dead','bird','bridge','side','squat','hinge']],
   A1:['A1：肩胛 + 颈肩基础版','建立前锯肌、下斜方肌和颈部发力',['breath','chin','wallplus','punch','scap','pronew','door']],
@@ -77,53 +79,73 @@ let selectedDay = new Date().getDay();
 let activeTab = 'today';
 let timers = {train:{seconds:0,on:false,id:null}, rest:{seconds:45,on:false,id:null}, breath:{on:false,id:null,i:0}};
 function $(id){return document.getElementById(id)}
-function loadData(){return Object.assign({}, def, JSON.parse(localStorage.getItem(KEY) || '{}'))}
+function safeJson(text){try{return JSON.parse(text)}catch{return null}}
+function loadData(){let current = safeJson(localStorage.getItem(KEY));if(current) return Object.assign({}, def, current);for(const k of OLD_KEYS){let old = safeJson(localStorage.getItem(k));if(old){let merged = Object.assign({}, def, old);localStorage.setItem(KEY, JSON.stringify(merged));return merged}}return structuredClone ? structuredClone(def) : JSON.parse(JSON.stringify(def))}
 function saveData(){localStorage.setItem(KEY, JSON.stringify(data))}
-function dateKey(d = new Date()){return d.toISOString().slice(0,10)}
-function weekNow(){let start = new Date((data.start || def.start) + 'T00:00:00');let now = new Date();return Math.max(1, Math.min(20, Math.floor((now - start) / 604800000) + 1))}
+function localISO(d = new Date()){let y=d.getFullYear();let m=String(d.getMonth()+1).padStart(2,'0');let day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`}
+function parseLocalDate(str){let [y,m,d] = (str || def.start).split('-').map(Number);return new Date(y, (m || 1) - 1, d || 1)}
+function dateKey(d = new Date()){return localISO(d)}
+function weekNow(){let start = parseLocalDate(data.start || def.start);let now = new Date();let startDay = new Date(start.getFullYear(),start.getMonth(),start.getDate());let nowDay = new Date(now.getFullYear(),now.getMonth(),now.getDate());return Math.max(1, Math.min(20, Math.floor((nowDay - startDay) / 604800000) + 1))}
 function phaseOf(w){return phases.find(p => w >= p.f && w <= p.t) || phases[phases.length - 1]}
 function dayCode(){return dkey[selectedDay]}
 function workoutKey(){return schedule(selectedWeek)[dayCode()] || 'rest'}
 function workout(){return W[workoutKey()] || W.rest}
 function todayRecord(){return data.records[dateKey()]}
-function init(){if(data.dark) document.body.classList.add('dark');$('startDate').value = data.start;renderNav();renderScoreInputs();renderAll()}
-function renderNav(){$('nav').innerHTML = tabs.map(t => `<button class="btn ${t[0]===activeTab?'active':''}" onclick="openTab('${t[0]}')">${t[1]}</button>`).join('')}
-function openTab(name){activeTab = name;document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));$(name).classList.add('active');renderNav();if(name === 'report') renderReport();if(name === 'plan') renderPlan();if(name === 'library') renderLibrary()}
+function init(){if(data.dark) document.body.classList.add('dark');$('startDate').value = data.start;bindUI();renderNav();renderScoreInputs();renderAll()}
+function bindUI(){
+  bindClick('darkBtn', toggleDark); bindClick('printBtn', () => window.print()); bindClick('shareBtn', sharePage);
+  bindClick('saveStartBtn', saveStart); bindClick('todayBtn', goToday); bindClick('completeAllBtn', completeAll); bindClick('clearChecksBtn', clearChecks); bindClick('openRecordBtn', () => openTab('record'));
+  bindClick('trainTimerBtn', () => timerStart('train')); bindClick('trainResetBtn', () => timerReset('train')); bindClick('restTimerBtn', () => timerStart('rest')); bindClick('restResetBtn', () => timerReset('rest')); bindClick('breathBtn', breathToggle);
+  bindClick('saveRecordBtn', saveRecord); bindClick('exportJsonBtn', exportJSON); bindClick('exportCsvBtn', exportCSV); bindClick('clearDataBtn', clearData);
+  bindChange('restSec', setRest); bindChange('importFile', importJSON); bindInput('q', renderLibrary);
+  $('nav')?.addEventListener('click', e => {let b=e.target.closest('[data-tab]'); if(b) openTab(b.dataset.tab)});
+  $('weeks')?.addEventListener('click', e => {let b=e.target.closest('[data-week]'); if(b){selectedWeek=Number(b.dataset.week); renderAll()}});
+  $('days')?.addEventListener('click', e => {let b=e.target.closest('[data-day]'); if(b){selectedDay=Number(b.dataset.day); renderAll()}});
+  $('exerciseList')?.addEventListener('change', e => {let cb=e.target.closest('[data-check]'); if(cb) toggleCheck(cb.dataset.check, cb.checked)});
+  document.addEventListener('input', e => {if(e.target.matches('input[type="range"]')) e.target.nextElementSibling.textContent = e.target.value});
+}
+function bindClick(id, fn){let el=$(id); if(el) el.addEventListener('click', fn)}
+function bindChange(id, fn){let el=$(id); if(el) el.addEventListener('change', fn)}
+function bindInput(id, fn){let el=$(id); if(el) el.addEventListener('input', fn)}
+function renderNav(){$('nav').innerHTML = tabs.map(t => `<button class="btn ${t[0]===activeTab?'active':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}
+function openTab(name){activeTab = name;document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));$(name)?.classList.add('active');renderNav();if(name === 'record') loadTodayForm();if(name === 'report') renderReport();if(name === 'plan') renderPlan();if(name === 'library') renderLibrary()}
 function renderTop(){let records = Object.values(data.records);$('mToday').textContent = days[new Date().getDay()];$('mWeek').textContent = '第' + weekNow() + '周';$('mPhase').textContent = phaseOf(weekNow()).n.split('：')[0];$('mDone').textContent = records.length + '次';$('mStreak').textContent = streak() + '天';coach()}
-function coach(){let list = Object.values(data.records).sort((a,b)=>b.date.localeCompare(a.date));let r = todayRecord() || list[0];let el = $('coach');if(!r){el.className = 'warning';el.textContent = '今天训练后保存一次记录，我会根据疼痛前后变化判断是否进阶、维持或降级。';return}let before = avg(r.before), after = avg(r.after), flags = (r.flags || []).length;if(flags || after - before >= 2 || after >= 7){el.className = 'danger';el.textContent = '建议降级：下次组数减半或退回上一阶段，并重点检查是否耸肩、憋气、腰顶。'}else if(after <= before && after <= 4){el.className = 'warning ok';el.textContent = '方向正确：不适没有加重，可以继续当前周；连续2次稳定后再小幅加量。'}else{el.className = 'warning';el.textContent = '建议维持：暂时不要加量，优先把动作做稳，尤其是不耸肩、不塌腰。'}}
-function renderWeeks(){let html = '';for(let i=1;i<=20;i++){let p = phaseOf(i);html += `<button class="week ${i===selectedWeek?'active':''}" onclick="selectedWeek=${i};renderAll()">第${i}周<small>${p.n}</small></button>`}$('weeks').innerHTML = html}
-function renderDays(){let order = [1,2,3,4,5,6,0];$('days').innerHTML = order.map(i => `<button class="day ${i===selectedDay?'active':''} ${i===new Date().getDay()&&selectedWeek===weekNow()?'today':''}" onclick="selectedDay=${i};renderAll()">${days[i]}</button>`).join('')}
+function coach(){let list = Object.values(data.records).sort((a,b)=>b.date.localeCompare(a.date));let r = todayRecord() || list[0];let el = $('coach');if(!el) return;if(!r){el.className = 'warning';el.textContent = '今天训练后保存一次记录，我会根据疼痛前后变化判断是否进阶、维持或降级。';return}let before = avg(r.before), after = avg(r.after), flags = (r.flags || []).length;if(flags || after - before >= 2 || after >= 7){el.className = 'danger';el.textContent = '建议降级：下次组数减半或退回上一阶段，并重点检查是否耸肩、憋气、腰顶。'}else if(after <= before && after <= 4){el.className = 'warning ok';el.textContent = '方向正确：不适没有加重，可以继续当前周；连续2次稳定后再小幅加量。'}else{el.className = 'warning';el.textContent = '建议维持：暂时不要加量，优先把动作做稳，尤其是不耸肩、不塌腰。'}}
+function renderWeeks(){let html = '';for(let i=1;i<=20;i++){let p = phaseOf(i);html += `<button class="week ${i===selectedWeek?'active':''}" data-week="${i}">第${i}周<small>${p.n}</small></button>`}$('weeks').innerHTML = html}
+function renderDays(){let order = [1,2,3,4,5,6,0];$('days').innerHTML = order.map(i => `<button class="day ${i===selectedDay?'active':''} ${i===new Date().getDay()&&selectedWeek===weekNow()?'today':''}" data-day="${i}">${days[i]}</button>`).join('')}
 function renderWorkout(){let w = workout();let p = phaseOf(selectedWeek);$('wTitle').textContent = w[0];$('wDesc').textContent = w[1];$('phaseTag').textContent = p.n;let ids = w[2];let checks = getChecks();$('exerciseList').innerHTML = ids.map((id,i) => exerciseCard(id,i,checks[id])).join('');let done = ids.filter(id => checks[id]).length;$('doneBar').style.width = (done / ids.length * 100 || 0) + '%'}
-function exerciseCard(id, index, done=false){let e = E[id];return `<article class="exercise"><div class="ex-top"><div><h3>${index+1}. ${e[0]}</h3><div class="chips"><span class="chip">${e[1]}</span><span class="chip">${e[5]}</span></div></div><label class="check"><input type="checkbox" ${done?'checked':''} onchange="toggleCheck('${id}',this.checked)">完成</label></div><div class="cols"><div class="box"><b>目标</b><p>${e[2]}</p></div><div class="box"><b>细节</b><p>${e[3]}</p></div><div class="box"><b>注意</b><p>${e[4]}</p></div></div></article>`}
+function exerciseCard(id, index, done=false){let e = E[id];return `<article class="exercise"><div class="ex-top"><div><h3>${index+1}. ${e[0]}</h3><div class="chips"><span class="chip">${e[1]}</span><span class="chip">${e[5]}</span></div></div><label class="check"><input type="checkbox" ${done?'checked':''} data-check="${id}">完成</label></div><div class="cols"><div class="box"><b>目标</b><p>${e[2]}</p></div><div class="box"><b>细节</b><p>${e[3]}</p></div><div class="box"><b>注意</b><p>${e[4]}</p></div></div></article>`}
 function checkKey(){return `${selectedWeek}-${dayCode()}-${dateKey()}`}
 function getChecks(){return data.checks[checkKey()] || {}}
 function toggleCheck(id, value){let key = checkKey();data.checks[key] = data.checks[key] || {};data.checks[key][id] = value;saveData();renderWorkout()}
 function completeAll(){let key = checkKey();data.checks[key] = {};workout()[2].forEach(id => data.checks[key][id] = true);saveData();renderWorkout()}
 function clearChecks(){data.checks[checkKey()] = {};saveData();renderWorkout()}
-function renderScoreInputs(){['before','after'].forEach(type => {$(type + 'Scores').innerHTML = scoreNames.map(name => `<div class="score"><label>${name}</label><input type="range" min="0" max="10" value="0" data-${type}="${name}" oninput="this.nextElementSibling.textContent=this.value"><b>0</b></div>`).join('')});$('flags').innerHTML = flagNames.map(f => `<label class="check"><input type="checkbox" data-flag="${f}">${f}</label>`).join('')}
+function renderScoreInputs(){['before','after'].forEach(type => {$(type + 'Scores').innerHTML = scoreNames.map(name => `<div class="score"><label>${name}</label><input type="range" min="0" max="10" value="0" data-${type}="${name}"><b>0</b></div>`).join('')});$('flags').innerHTML = flagNames.map(f => `<label class="check"><input type="checkbox" data-flag="${f}">${f}</label>`).join('')}
 function readScores(type){let out = {};document.querySelectorAll(`[data-${type}]`).forEach(x => out[x.dataset[type]] = Number(x.value));return out}
-function saveRecord(){let key = dateKey();data.records[key] = {date:key, week:selectedWeek, day:days[selectedDay], workout:workout()[0], done:$('done').checked || Object.values(getChecks()).some(Boolean), before:readScores('before'), after:readScores('after'), flags:[...document.querySelectorAll('[data-flag]:checked')].map(x => x.dataset.flag), note:$('note').value, checks:getChecks(), updated:new Date().toLocaleString()};saveData();renderAll();alert('已保存今日记录')}
+function setScores(type, obj = {}){document.querySelectorAll(`[data-${type}]`).forEach(x => {let v = Number(obj[x.dataset[type]] || 0);x.value = v;x.nextElementSibling.textContent = v})}
+function loadTodayForm(){let r = todayRecord();if(!r){$('done').checked = Object.values(getChecks()).some(Boolean);setScores('before',{});setScores('after',{});document.querySelectorAll('[data-flag]').forEach(x => x.checked = false);$('note').value = '';return}$('done').checked = !!r.done;setScores('before', r.before);setScores('after', r.after);document.querySelectorAll('[data-flag]').forEach(x => x.checked = (r.flags || []).includes(x.dataset.flag));$('note').value = r.note || ''}
+function saveRecord(){let key = dateKey();data.records[key] = {date:key, week:selectedWeek, day:days[selectedDay], workout:workout()[0], done:$('done').checked || Object.values(getChecks()).some(Boolean), before:readScores('before'), after:readScores('after'), flags:[...document.querySelectorAll('[data-flag]:checked')].map(x => x.dataset.flag), note:$('note').value.trim(), checks:getChecks(), updated:new Date().toLocaleString()};saveData();renderAll();alert('已保存今日记录')}
 function renderHistory(){let arr = Object.values(data.records).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,12);$('history').innerHTML = arr.length ? arr.map(r => `<div class="hist"><b>${r.date} · ${r.workout}</b><small>第${r.week}周 · ${r.day} · ${r.done?'已完成':'未完成'} · 训练后均分 ${avg(r.after)}/10</small><p>${(r.flags||[]).length ? '异常：' + r.flags.join('、') : '无异常信号'}</p><p>${r.note || '无备注'}</p></div>`).join('') : '<p class="sub">还没有记录。</p>'}
-function renderReport(){let arr = Object.values(data.records).sort((a,b)=>a.date.localeCompare(b.date));let last = arr.slice(-7);let done = last.filter(x => x.done).length;$('reportCards').innerHTML = `<div class="metric"><b>${done}/7</b><span>近7次完成</span></div><div class="metric"><b>${avgGroup(last,'before')}</b><span>训练前平均不适</span></div><div class="metric"><b>${avgGroup(last,'after')}</b><span>训练后平均不适</span></div>`;renderCalendar();let p = phaseOf(selectedWeek);$('criteria').innerHTML = p.c.map(x => `<label class="check"><input type="checkbox">${x}</label>`).join('') + '<p class="sub">满足多数标准且连续2次训练不加重，再进入下一阶段或小幅加量。</p>'}
+function renderReport(){let arr = Object.values(data.records).sort((a,b)=>a.date.localeCompare(b.date));let last = arr.slice(-7);let done = last.filter(x => x.done).length;let delta = Math.round((avgGroup(last,'after') - avgGroup(last,'before')) * 10) / 10;$('reportCards').innerHTML = `<div class="metric"><b>${done}/7</b><span>近7次完成</span></div><div class="metric"><b>${avgGroup(last,'before')}</b><span>训练前平均不适</span></div><div class="metric"><b>${avgGroup(last,'after')}</b><span>训练后平均不适，变化 ${delta}</span></div>`;renderCalendar();let p = phaseOf(selectedWeek);$('criteria').innerHTML = p.c.map(x => `<label class="check"><input type="checkbox">${x}</label>`).join('') + '<p class="sub">满足多数标准且连续2次训练不加重，再进入下一阶段或小幅加量。</p>'}
 function renderCalendar(){let now = new Date();let start = new Date(now);start.setDate(now.getDate() - 20);let html = '';for(let i=0;i<21;i++){let d = new Date(start);d.setDate(start.getDate()+i);let key = dateKey(d);let r = data.records[key];html += `<div class="cal ${r&&r.done?'done':''} ${key===dateKey()?'today':''}"><b>${key.slice(5)}</b><br>${days[d.getDay()]}<br>${r?'后'+avg(r.after)+'/10':''}</div>`}$('calendar').innerHTML = html}
 function renderPlan(){let html = '';phases.forEach(p => {html += `<h3>${p.n}</h3><p class="sub">${p.g}</p><table><thead><tr><th>周数</th><th>周一</th><th>周二</th><th>周三</th><th>周四</th><th>周五</th><th>周六</th><th>周日</th></tr></thead><tbody>`;for(let w=p.f;w<=p.t;w++){let s = schedule(w);html += `<tr><td>第${w}周</td>${[1,2,3,4,5,6,0].map(d => `<td>${W[s[dkey[d]] || 'rest'][0]}</td>`).join('')}</tr>`}html += '</tbody></table>'});$('fullPlan').innerHTML = html}
 function renderLibrary(){let q = ($('q') && $('q').value || '').trim();let entries = Object.entries(E).filter(([id,e]) => !q || e.join('').includes(q));$('lib').innerHTML = entries.length ? entries.map(([id,e],i)=>exerciseCard(id,i,false)).join('') : '<p class="sub">没有找到动作。</p>'}
-function renderAll(){renderTop();renderWeeks();renderDays();renderWorkout();renderHistory();if(activeTab==='report') renderReport();if(activeTab==='plan') renderPlan();if(activeTab==='library') renderLibrary()}
+function renderAll(){renderTop();renderWeeks();renderDays();renderWorkout();renderHistory();if(activeTab==='record') loadTodayForm();if(activeTab==='report') renderReport();if(activeTab==='plan') renderPlan();if(activeTab==='library') renderLibrary()}
 function avg(obj){let vals = Object.values(obj || {});return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0) / vals.length * 10) / 10 : 0}
 function avgGroup(list, type){let vals = list.flatMap(r => Object.values(r[type] || {}));return vals.length ? Math.round(vals.reduce((a,b)=>a+b,0) / vals.length * 10) / 10 : 0}
 function streak(){let n = 0;let d = new Date();while(data.records[dateKey(d)]){n++;d.setDate(d.getDate()-1)}return n}
 function saveStart(){data.start = $('startDate').value || def.start;saveData();selectedWeek = weekNow();renderAll()}
 function goToday(){selectedWeek = weekNow();selectedDay = new Date().getDay();openTab('today');renderAll()}
 function toggleDark(){document.body.classList.toggle('dark');data.dark = document.body.classList.contains('dark');saveData()}
-function sharePage(){navigator.clipboard && navigator.clipboard.writeText(location.href);alert('网址已复制')}
+function sharePage(){if(navigator.clipboard) navigator.clipboard.writeText(location.href);alert('网址已复制')}
 function exportJSON(){downloadFile('康复训练记录.json', JSON.stringify(data,null,2), 'application/json')}
-function exportCSV(){let rows = ['date,week,day,workout,done,beforeAvg,afterAvg,flags,note'];Object.values(data.records).forEach(r => rows.push([r.date,r.week,r.day,r.workout,r.done,avg(r.before),avg(r.after),`"${(r.flags||[]).join('、')}"`,`"${(r.note||'').replaceAll('"','""')}"`].join(',')));downloadFile('康复训练记录.csv', rows.join('\n'), 'text/csv')}
+function exportCSV(){let rows = ['date,week,day,workout,done,beforeAvg,afterAvg,flags,note'];Object.values(data.records).forEach(r => rows.push([r.date,r.week,r.day,r.workout,r.done,avg(r.before),avg(r.after),`"${(r.flags||[]).join('、')}"`,`"${(r.note||'').replaceAll('"','""')}"`].join(',')));downloadFile('康复训练记录.csv', rows.join('\n'), 'text/csv;charset=utf-8')}
 function downloadFile(name,text,type){let a = document.createElement('a');a.href = URL.createObjectURL(new Blob([text],{type}));a.download = name;a.click();URL.revokeObjectURL(a.href)}
-function importJSON(event){let file = event.target.files[0];if(!file) return;let reader = new FileReader();reader.onload = () => {try{data = Object.assign({}, def, JSON.parse(reader.result));saveData();renderAll();alert('导入成功')}catch(e){alert('导入失败')}};reader.readAsText(file)}
+function importJSON(event){let file = event.target.files[0];if(!file) return;let reader = new FileReader();reader.onload = () => {let imported = safeJson(reader.result);if(imported){data = Object.assign({}, def, imported);saveData();renderAll();alert('导入成功')}else alert('导入失败')};reader.readAsText(file)}
 function clearData(){if(confirm('确定清空所有本地记录？')){localStorage.removeItem(KEY);data = loadData();renderAll()}}
 function fmt(seconds){let m = Math.floor(seconds/60);let s = seconds % 60;return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0')}
 function timerStart(type){let t = timers[type];t.on = !t.on;if(t.on){t.id = setInterval(() => {if(type === 'train') t.seconds++;else t.seconds = Math.max(0, t.seconds - 1);$(type + 'Time').textContent = fmt(t.seconds);if(type === 'rest' && t.seconds === 0){t.on=false;clearInterval(t.id)}}, 1000)}else clearInterval(t.id)}
 function timerReset(type){let t = timers[type];clearInterval(t.id);t.on = false;t.seconds = type === 'rest' ? Number($('restSec').value) : 0;$(type + 'Time').textContent = fmt(t.seconds)}
 function setRest(){timerReset('rest')}
 function breathToggle(){let t = timers.breath;t.on = !t.on;if(t.on){t.id = setInterval(() => {t.i++;$('breathText').textContent = t.i % 10 < 4 ? '吸气' : '呼气'},1000)}else clearInterval(t.id)}
-init();
+window.addEventListener('DOMContentLoaded', init);

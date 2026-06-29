@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="description" content="肩颈肩胛与腰背康复训练动态记录网站：今日训练、动作细节、疼痛评分、周报、进阶判断、本地记录。">
+  <title>康复训练 Pro · 动态记录系统</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <div class="brand"><div class="logo">康</div><div><h1>康复训练 Pro</h1><p>动态计划 · 记录 · 周报 · 进阶判断</p></div></div>
+      <div class="actions"><button class="btn" id="darkBtn">深色/浅色</button><button class="btn" id="printBtn">打印</button><button class="btn primary" id="shareBtn">复制网址</button></div>
+    </header>
+    <section class="hero">
+      <div class="card"><span class="pill">针对：斜方肌易酸 · 翼状肩胛 · 肩弹响 · 腰酸 · 呼吸不顺</span><h1 class="title">肩颈肩胛与腰背康复训练系统</h1><p class="sub">核心逻辑：先降代偿，再建控制，再强化，再进入健身房。每天自动显示训练内容，并记录完成情况、疼痛变化、备注和进阶标准。</p><div class="metrics"><div class="metric"><b id="mToday">-</b><span>今天</span></div><div class="metric"><b id="mWeek">-</b><span>当前周</span></div><div class="metric"><b id="mPhase">-</b><span>当前阶段</span></div><div class="metric"><b id="mStreak">0天</b><span>连续记录</span></div><div class="metric"><b id="mDone">0次</b><span>总记录</span></div></div></div>
+      <div class="card"><h2 style="margin-top:0">今天判断</h2><p id="coach" class="warning">保存记录后，这里会根据疼痛评分给你建议。</p><p class="ok">正确方向：练完斜方肌和腰没有更酸，呼吸更顺，动作中不耸肩、不憋气。</p><p class="danger">停止信号：刺痛、麻、放射痛、关节卡住、明显无力、疼痛持续加重。</p></div>
+    </section>
+    <nav class="nav" id="nav"></nav>
+    <main class="layout">
+      <aside class="card side"><h3>周数与设置</h3><div class="weeks" id="weeks"></div><hr style="border:none;border-top:1px solid var(--line);margin:14px 0"><label class="sub">起始日期</label><input id="startDate" class="search" type="date"><div class="tools"><button class="btn primary" id="saveStartBtn">保存起始日</button><button class="btn" id="todayBtn">回到今天</button></div></aside>
+      <section>
+        <div class="card panel active" id="today"><div class="days" id="days"></div><div class="head"><div><h2 id="wTitle">-</h2><p id="wDesc" class="sub"></p></div><span class="tag" id="phaseTag"></span></div><div class="progress"><div class="bar" id="doneBar"></div></div><div class="tools"><button class="btn green" id="completeAllBtn">本组全选完成</button><button class="btn" id="clearChecksBtn">清空动作勾选</button><button class="btn" id="openRecordBtn">填写今日记录</button></div><div id="exerciseList"></div></div>
+        <div class="card panel" id="timer"><h2>训练计时器</h2><div class="timer"><div class="box"><b>训练计时</b><div class="time" id="trainTime">00:00</div><button class="btn primary" id="trainTimerBtn">开始/暂停</button><button class="btn" id="trainResetBtn">归零</button></div><div class="box"><b>休息倒计时</b><div class="time" id="restTime">00:45</div><select id="restSec" class="search"><option value="30">30秒</option><option value="45" selected>45秒</option><option value="60">60秒</option><option value="90">90秒</option></select><button class="btn primary" id="restTimerBtn">开始/暂停</button><button class="btn" id="restResetBtn">重置</button></div><div class="box"><b>呼吸节奏</b><div class="time" id="breathText">吸气</div><p class="sub">4秒吸气 / 6秒呼气</p><button class="btn primary" id="breathBtn">开始/暂停</button></div></div></div>
+        <div class="card panel" id="record"><h2>今日记录</h2><div class="formgrid"><div><label class="check"><input type="checkbox" id="done">今天完成训练</label><h3>训练前评分</h3><div id="beforeScores"></div><h3>训练后评分</h3><div id="afterScores"></div><h3>异常信号</h3><div id="flags"></div><label>备注</label><textarea id="note" class="note" placeholder="例如：墙面 push-up plus 右侧肩胛更难控制；练完腰没更酸；呼吸比昨天顺。"></textarea><div class="tools"><button class="btn primary" id="saveRecordBtn">保存记录</button><button class="btn" id="exportJsonBtn">导出JSON</button><button class="btn" id="exportCsvBtn">导出CSV</button><label class="btn">导入JSON<input id="importFile" type="file" accept="application/json" hidden></label><button class="btn red" id="clearDataBtn">清空记录</button></div></div><div><h3>最近记录</h3><div class="history" id="history"></div></div></div></div>
+        <div class="card panel" id="report"><h2>周报与进阶判断</h2><div class="grid3" id="reportCards"></div><h3>本周日历</h3><div class="calendar" id="calendar"></div><h3>进阶标准</h3><div id="criteria"></div></div>
+        <div class="card panel" id="plan"><h2>完整阶段计划</h2><div id="fullPlan"></div></div>
+        <div class="card panel" id="library"><h2>动作库</h2><input class="search" id="q" placeholder="搜索动作，比如：前锯肌、死虫、肩胛、臀桥"><div id="lib"></div></div>
+        <div class="card panel" id="help"><h2>使用说明</h2><div class="grid2"><div class="box"><b>记录保存在哪里？</b><p>保存在当前浏览器 localStorage。别人打开网页也能用，但数据不会同步到你这里。</p></div><div class="box"><b>如何换手机？</b><p>旧设备导出 JSON，新设备导入 JSON。</p></div><div class="box"><b>什么时候降级？</b><p>训练后不适明显增加、第二天更酸、疼痛超过48小时，下次减半或退回上一阶段。</p></div><div class="box"><b>什么时候进阶？</b><p>连续2次训练没有加重，且对应阶段标准多数达成，再增加次数、组数或进入下一阶段。</p></div></div></div>
+      </section>
+    </main>
+    <p class="footer">医疗提醒：这不是诊断。若出现持续加重、麻木放射、明显无力、外伤后疼痛、发热等情况，应及时就医。</p>
+  </div>
+  <script src="app.js"></script>
+  <script src="bind.js"></script>
+</body>
+</html>

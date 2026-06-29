@@ -1,0 +1,1 @@
+var structuredClone = window.structuredClone;

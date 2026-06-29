@@ -1,66 +1,12 @@
-/* Final timer control fix: force real layout gaps without changing HTML. Loaded last. */
-#timer .timer{
-  gap:20px !important;
-  align-items:stretch !important;
-}
-#timer .timer .box{
-  display:grid !important;
-  grid-template-columns:repeat(2, minmax(116px, max-content)) !important;
-  justify-content:center !important;
-  align-content:start !important;
-  justify-items:center !important;
-  gap:14px 18px !important;
-  padding:24px 22px !important;
-  text-align:center !important;
-}
-#timer .timer .box > b,
-#timer .timer .box > .time,
-#timer .timer .box > .search,
-#timer .timer .box > select,
-#timer .timer .box > p{
-  grid-column:1 / -1 !important;
-  justify-self:stretch !important;
-  margin:0 !important;
-}
-#timer .timer .box > b,
-#timer .timer .box > .time,
-#timer .timer .box > p{
-  justify-self:center !important;
-}
-#timer .timer .box > .search,
-#timer .timer .box > select{
-  width:100% !important;
-  max-width:420px !important;
-  margin-bottom:0 !important;
-}
-#timer .timer .box > button.btn{
-  grid-column:auto !important;
-  margin:0 !important;
-  min-width:116px !important;
-  width:auto !important;
-  white-space:nowrap !important;
-}
-#timer .timer .box > button.btn.primary{
-  min-width:138px !important;
-}
-#timer .timer .box > button.btn:only-of-type{
-  grid-column:1 / -1 !important;
-  justify-self:center !important;
-}
-#timer .timer .box > #breathBtn{
-  grid-column:1 / -1 !important;
-  justify-self:center !important;
-}
-@media(max-width:920px){
-  #timer .timer .box{
-    grid-template-columns:1fr !important;
-    gap:12px !important;
-    padding:20px 16px !important;
-  }
-  #timer .timer .box > button.btn,
-  #timer .timer .box > button.btn.primary{
-    grid-column:1 / -1 !important;
-    width:100% !important;
-    min-width:0 !important;
-  }
-}
+#timer .timer{gap:24px!important;align-items:stretch!important}
+#timer .timer .box{display:grid!important;grid-template-columns:repeat(2,minmax(130px,max-content))!important;justify-content:center!important;justify-items:center!important;gap:16px 24px!important;padding:26px 24px!important;text-align:center!important}
+#timer .timer .box>b,#timer .timer .box>.time,#timer .timer .box>.search,#timer .timer .box>select,#timer .timer .box>p{grid-column:1/-1!important;margin:0!important}
+#timer .timer .box>button.btn{margin:0!important;min-width:130px!important;width:auto!important;white-space:nowrap!important}
+#timer .timer .box>button.btn.primary{min-width:150px!important}
+#timer .timer .box>#breathBtn{grid-column:1/-1!important}
+#record .formgrid{gap:24px!important;align-items:start!important}
+#record .note{width:100%!important;min-height:210px!important;padding:18px 20px!important;font-size:17px!important;line-height:1.8!important;border-radius:22px!important;resize:vertical!important;overflow:auto!important}
+#record .tools{display:grid!important;grid-template-columns:repeat(5,minmax(120px,1fr))!important;gap:16px!important;margin-top:18px!important}
+#record .tools .btn{width:100%!important;margin:0!important;min-width:0!important;white-space:nowrap!important}
+@media(max-width:1180px){#record .tools{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:920px){#timer .timer .box{grid-template-columns:1fr!important;gap:12px!important}#timer .timer .box>button.btn{width:100%!important;min-width:0!important}#record .note{min-height:240px!important;font-size:16px!important}#record .tools{grid-template-columns:1fr!important}}

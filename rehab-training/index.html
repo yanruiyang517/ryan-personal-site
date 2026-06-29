@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>康复训练动态记录表</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--text:#172033;--muted:#667085;--line:#e5e7eb;--main:#2563eb;--soft:#eff6ff;--ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--shadow:0 18px 50px rgba(15,23,42,.08)}*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef4ff,#f8fafc 280px);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.65}.wrap{max-width:1180px;margin:auto;padding:24px 16px 56px}.hero{display:grid;grid-template-columns:1.3fr .7fr;gap:18px;align-items:stretch}.card{background:rgba(255,255,255,.92);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:22px}.title{font-size:clamp(28px,5vw,52px);line-height:1.1;margin:8px 0 12px}.sub{color:var(--muted);font-size:15px}.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 12px;border-radius:999px;background:var(--soft);color:#1d4ed8;font-weight:700;font-size:13px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}.stat{background:#f8fafc;border:1px solid var(--line);border-radius:18px;padding:14px}.stat b{display:block;font-size:22px}.stat span{color:var(--muted);font-size:13px}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.tabs button,.btn{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:700;color:var(--text)}.tabs button.active,.btn.primary{background:var(--main);color:#fff;border-color:var(--main)}.btn.danger{color:#b91c1c}.layout{display:grid;grid-template-columns:280px 1fr;gap:18px}.side{position:sticky;top:12px;align-self:start}.weeklist{display:grid;gap:8px}.weeklist button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;cursor:pointer}.weeklist button.active{border-color:var(--main);background:var(--soft);color:#1d4ed8;font-weight:800}.section{margin-top:18px}.daybar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}.daybar button{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 6px;cursor:pointer}.daybar button.active{background:#111827;color:#fff;border-color:#111827}.daybar button.today{box-shadow:0 0 0 2px #bfdbfe inset}.workout-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin:16px 0}.workout-title{font-size:26px;margin:0}.badge{border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;background:#f3f4f6;color:#374151}.exercise{border:1px solid var(--line);border-radius:20px;background:#fff;margin:12px 0;padding:16px}.exercise h3{margin:0 0 6px;font-size:20px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.meta span{background:#f8fafc;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font-size:13px}.cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.box{background:#f8fafc;border:1px solid var(--line);border-radius:16px;padding:12px}.box b{display:block;margin-bottom:4px}.box p{margin:0;color:#475467;font-size:14px}.record{display:grid;grid-template-columns:1fr 1fr;gap:14px}.formrow{margin:10px 0}.formrow label{display:block;font-weight:800;margin-bottom:6px}.formrow input[type=range]{width:100%}.formrow textarea{width:100%;min-height:92px;border:1px solid var(--line);border-radius:14px;padding:10px;font:inherit}.scoreline{display:grid;grid-template-columns:120px 1fr 34px;gap:10px;align-items:center;margin:9px 0}.history{display:grid;gap:10px}.hist{border:1px solid var(--line);background:#fff;border-radius:16px;padding:12px}.hist small{color:var(--muted)}.notice{border-left:4px solid var(--warn);background:#fffbeb;border-radius:16px;padding:12px 14px;color:#78350f}.pass{border-left-color:var(--ok);background:#f0fdf4;color:#166534}.footer{color:var(--muted);font-size:13px;margin-top:24px}@media(max-width:860px){.hero,.layout,.record,.cols{grid-template-columns:1fr}.side{position:static}.grid{grid-template-columns:repeat(2,1fr)}.daybar{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="card">
+      <span class="pill">动态康复计划 · 本地记录</span>
+      <h1 class="title">肩颈肩胛与腰背康复训练</h1>
+      <p class="sub">根据当前情况整理：斜方肌易酸、翼状肩胛、右肩弹响、胸小肌酸、肩胛酸、腰酸、背挺直呼吸不顺。核心逻辑：先降代偿，再建控制，再强化，再过渡到健身房。</p>
+      <div class="grid">
+        <div class="stat"><b id="todayName">-</b><span>今天</span></div>
+        <div class="stat"><b id="currentWeek">-</b><span>当前周</span></div>
+        <div class="stat"><b id="currentPhase">-</b><span>当前阶段</span></div>
+        <div class="stat"><b id="doneCount">0</b><span>已记录次数</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="margin-top:0">训练红线</h2>
+      <p class="notice">刺痛、麻、放射痛、关节卡住、无力、疼痛明显加重时不要硬练。训练后酸痛超过 48 小时，下次组数减半。</p>
+      <p class="notice pass">合格方向：练完斜方肌和腰没有更酸，呼吸更顺，动作中不耸肩、不憋气。</p>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="active" data-tab="today">今日训练</button>
+    <button data-tab="plan">完整计划</button>
+    <button data-tab="record">训练记录</button>
+    <button data-tab="rules">动作标准</button>
+  </div>
+
+  <main class="layout">
+    <aside class="card side">
+      <h3 style="margin-top:0">选择周数</h3>
+      <div class="weeklist" id="weekList"></div>
+      <div style="height:14px"></div>
+      <button class="btn primary" onclick="setTodayWeek()">回到当前周</button>
+    </aside>
+
+    <section>
+      <div class="card panel" id="todayPanel">
+        <div class="daybar" id="dayBar"></div>
+        <div class="workout-head">
+          <div><h2 class="workout-title" id="workoutTitle"></h2><p class="sub" id="workoutDesc"></p></div>
+          <span class="badge" id="phaseBadge"></span>
+        </div>
+        <div id="exerciseList"></div>
+      </div>
+
+      <div class="card panel" id="planPanel" style="display:none">
+        <h2 style="margin-top:0">完整阶段安排</h2>
+        <div id="fullPlan"></div>
+      </div>
+
+      <div class="card panel" id="recordPanel" style="display:none">
+        <h2 style="margin-top:0">今日记录</h2>
+        <div class="record">
+          <div>
+            <div class="formrow"><label><input type="checkbox" id="done"> 今天已完成训练</label></div>
+            <div id="scoreBox"></div>
+            <div class="formrow"><label>备注</label><textarea id="note" placeholder="例如：墙面 push-up plus 时斜方肌有点抢活；腰没有更酸；呼吸比昨天顺。"></textarea></div>
+            <button class="btn primary" onclick="saveRecord()">保存今日记录</button>
+            <button class="btn" onclick="exportJSON()">导出 JSON</button>
+            <button class="btn" onclick="exportCSV()">导出 CSV</button>
+            <label class="btn">导入记录 <input id="importFile" type="file" accept="application/json" hidden onchange="importJSON(event)"></label>
+            <button class="btn danger" onclick="clearAll()">清空记录</button>
+          </div>
+          <div>
+            <h3>历史记录</h3>
+            <div class="history" id="history"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card panel" id="rulesPanel" style="display:none">
+        <h2 style="margin-top:0">动作标准库</h2>
+        <div id="rulesList"></div>
+      </div>
+    </section>
+  </main>
+  <p class="footer">记录保存在当前浏览器 localStorage。换手机、清缓存、换浏览器不会自动同步。要多人云同步，需要接 Supabase/Firebase。</p>
+</div>
+<script>
+const START_DATE='2026-06-29';
+const days=['周日','周一','周二','周三','周四','周五','周六'];
+const dayKeys=['sun','mon','tue','wed','thu','fri','sat'];
+const scores=['脖子酸','斜方肌酸','肩胛酸','胸小肌酸','腰酸','背挺直呼吸不顺','右肩弹响疼痛'];
+const ex={
+ breathing:{name:'90/90呼吸',amount:'2–3分钟',goal:'放松胸廓，降低脖子、斜方肌和腰的代偿。',detail:'仰卧，髋膝约90度，鼻吸嘴呼；呼气时肋骨往下收，腹部轻轻参与。',note:'不要挺胸吸气、不要耸肩、不要憋气。'},
+ chin:{name:'仰卧收下巴',amount:'2–3组 × 8–10次',goal:'激活深层颈屈肌，改善头前伸，减少颈后压力。',detail:'像轻微做双下巴，后颈轻轻拉长，力度只用20%–30%。',note:'不是低头，不要用力压脖子；做完不应该更酸。'},
+ catcow:{name:'猫牛式',amount:'10次',goal:'活动脊柱和胸椎，让身体从僵硬状态切换到训练状态。',detail:'四点跪，慢慢拱背再慢慢伸展，配合呼吸。',note:'不要甩头，不要塌腰硬顶。'},
+ openbook:{name:'开书式胸椎旋转',amount:'每侧6–8次',goal:'改善胸椎僵硬和圆肩，减少肩颈代偿。',detail:'侧卧，膝盖弯曲固定，手臂像翻书一样打开，重点转上背。',note:'不要猛扭腰，不追求幅度。'},
+ wallplus:{name:'墙面 push-up plus / 前锯肌推墙',amount:'2–3组 × 8–15次',goal:'激活前锯肌，让肩胛骨更贴住肋骨，改善翼状肩胛。',detail:'双手扶墙，手肘基本伸直，把墙推远，让肩胛平稳向外滑。',note:'重点是推远，不是耸肩；头别前探，腰别塌。'},
+ punch:{name:'仰卧前锯肌拳击',amount:'2–3组 × 10–12次',goal:'低负荷激活前锯肌，适合斜方肌容易抢活的人。',detail:'仰卧，手臂伸向天花板，把拳头轻轻向上送，肩胛轻微离地。',note:'肩膀不要往耳朵方向顶。'},
+ pronew:{name:'俯卧W',amount:'2–3组 × 6–8次',goal:'激活中下斜方肌，改善圆肩和肩胛控制。',detail:'俯卧，手臂摆成W，肩胛轻轻往后下方走，幅度小也可以。',note:'不要抬太高，不要耸肩，不要脖子用力。'},
+ proneY:{name:'俯卧Y',amount:'1–2组 × 5–6次',goal:'强化下斜方肌，帮助肩胛上旋。',detail:'俯卧，手臂呈Y字，轻轻抬起一点点即可。',note:'只有W不让斜方肌酸爆时再做；不追求高度。'},
+ doorway:{name:'门框拉胸',amount:'每侧20–30秒',goal:'放松胸小肌，减少肩膀前扣和胸前紧。',detail:'前臂扶门框，身体轻轻向前，感受胸前轻拉。',note:'不要把腰顶出去，不要拉到疼。'},
+ scap:{name:'四点跪肩胛俯卧撑',amount:'2–3组 × 8–10次',goal:'提高肩胛控制，学习只动肩胛不乱用手臂。',detail:'四点跪，手肘不弯，只让肩胛靠近/推开。',note:'一耸肩就减小幅度。'},
+ deadbug:{name:'死虫',amount:'2–3组 × 每侧6–10次',goal:'建立核心稳定，减少腰酸和腰椎代偿。',detail:'仰卧，腰保持稳定，对侧手脚慢慢伸出再收回。',note:'腰不能拱，动作越慢越好，不能憋气。'},
+ birddog:{name:'鸟狗',amount:'2–3组 × 每侧6–10次',goal:'训练核心、腰背和骨盆稳定。',detail:'四点跪，对侧手脚伸出，保持骨盆平。',note:'腿不要抬太高，头别前探，骨盆不要左右晃。'},
+ bridge:{name:'臀桥',amount:'3–4组 × 10–15次',goal:'激活臀部，让腰少代偿。',detail:'仰卧屈膝，用臀部发力抬起，肩髋膝接近一条线。',note:'不要用腰顶，不要抬过高。'},
+ sideplank:{name:'屈膝侧桥',amount:'每侧2–3组 × 15–30秒',goal:'强化侧腹和骨盆稳定。',detail:'侧卧屈膝，用侧腹撑起身体，保持呼吸。',note:'腰酸就缩短到10–15秒，肩不要耸。'},
+ squatchair:{name:'椅子深蹲',amount:'2–3组 × 8–12次',goal:'建立下肢基础力量。',detail:'坐向椅子再站起，膝盖和脚尖方向一致。',note:'脖子别前探，膝盖别内扣。'},
+ hinge:{name:'髋铰链',amount:'2–3组 × 8–12次',goal:'学会用髋折叠，为以后硬拉、划船打基础。',detail:'屁股往后推，背保持自然，髋部折叠。',note:'不要弯腰驼背，不要脖子前探。'},
+ walk:{name:'散步',amount:'20–40分钟',goal:'促进恢复，减少久坐导致的僵硬。',detail:'轻松走，不追求速度和疲劳感。',note:'如果腰腿不适，缩短时间。'},
+ wallangel:{name:'墙天使',amount:'2组 × 6次',goal:'改善胸椎和肩胛活动。',detail:'背靠墙，手臂缓慢上下滑动。',note:'腰别拱，手贴不住墙也没事。'},
+ wallslide:{name:'墙面滑手 wall slide',amount:'2组 × 8次',goal:'练肩胛上旋，为下拉、推胸做准备。',detail:'前臂贴墙，慢慢向上滑，再控制回来。',note:'不耸肩，不拱腰。'},
+ lunge:{name:'扶墙反向弓步 / 分腿蹲准备',amount:'每侧2组 × 6–8次',goal:'训练单腿控制和骨盆稳定。',detail:'手扶墙，后脚向后，慢慢下蹲再站起。',note:'膝盖对准脚尖，不要晃。'},
+ row:{name:'坐姿划船 / 胸托划船',amount:'3–4组 × 10–12次',goal:'练背和肩胛后缩控制，减少圆肩。',detail:'胸口稳定，拉到身体附近，肩胛向后下方。',note:'肩膀别耸，头别前探，别用腰甩。'},
+ pulldown:{name:'高位下拉，中立握',amount:'3组 × 10次',goal:'练背阔肌和肩胛下沉控制。',detail:'先让肩胛下沉，再把把手拉向上胸附近。',note:'不要耸肩，不把头往前伸。'},
+ legpress:{name:'腿举',amount:'3–4组 × 10–12次',goal:'训练腿部力量，同时比自由深蹲更容易控制腰。',detail:'脚踩稳，膝盖顺着脚尖方向，慢上慢下。',note:'不憋气，不锁膝，不让腰离垫。'},
+ curl:{name:'腿弯举',amount:'3组 × 12次',goal:'训练腘绳肌，帮助骨盆和膝关节稳定。',detail:'控制速度，顶峰轻停，再慢慢还原。',note:'不要甩重量。'},
+ hipthrust:{name:'臀推机 / 臀桥机',amount:'3–4组 × 8–12次',goal:'强化臀部，减少腰酸。',detail:'用臀发力顶起，身体稳定。',note:'不要用腰顶，不要憋气。'},
+ chest:{name:'器械推胸，轻重量',amount:'2–3组 × 10次',goal:'重新建立推的模式，逐步恢复上肢力量。',detail:'肩胛稳定，推起时不要把肩膀顶到耳朵。',note:'肩前痛、弹响伴痛就停。'},
+ facepull:{name:'绳索面拉，极轻',amount:'2–3组 × 12次',goal:'训练后肩和肩胛稳定协同。',detail:'轻重量，把绳索拉向脸部附近，肘略外展。',note:'一耸肩就删掉。'},
+ lateral:{name:'哑铃侧平举，极轻',amount:'2–3组 × 12次',goal:'轻练三角肌中束，为正式增肌过渡。',detail:'小重量，手臂向两侧抬到舒适高度。',note:'不能耸肩，不能甩。'},
+ shoulder:{name:'坐姿器械肩推，极轻',amount:'2组 × 8次',goal:'测试肩推能力。',detail:'坐稳，轻重量，路径自然。',note:'右肩不适就删。'}
+};
+const workouts={
+ reset:{title:'基础重置',desc:'每天早上或训练前做，核心是降代偿、顺呼吸。',items:['breathing','chin','catcow','openbook','wallplus']},
+ light:{title:'轻恢复',desc:'不追求累，只恢复胸椎、呼吸和肩颈状态。',items:['breathing','catcow','openbook','doorway','walk']},
+ rest:{title:'休息 / 散步',desc:'可散步，避免久坐；不做高强度训练。',items:['walk','breathing']},
+ A0:{title:'A0：颈肩肩胛降级版',desc:'第0阶段用于降低斜方肌代偿。',items:['breathing','chin','wallplus','punch','pronew','doorway']},
+ B0:{title:'B0：核心臀腿降级版',desc:'让核心和臀部开始工作，减少腰部代偿。',items:['breathing','deadbug','birddog','bridge','sideplank','squatchair','hinge']},
+ A1:{title:'A1：肩胛 + 颈肩基础版',desc:'建立前锯肌、下斜方肌和颈部正确发力。',items:['breathing','chin','wallplus','punch','scap','pronew','doorway']},
+ B1:{title:'B1：核心 + 臀腿基础版',desc:'建立核心、臀部、下肢基础控制。',items:['breathing','deadbug','birddog','bridge','sideplank','squatchair','hinge']},
+ A2:{title:'A2：肩胛上背强化版',desc:'从康复动作过渡到基础力量。',items:['breathing','chin','wallplus','scap','pronew','proneY','wallangel','doorway']},
+ B2:{title:'B2：核心臀腿强化版',desc:'强化核心、臀腿和髋控制。',items:['deadbug','birddog','bridge','sideplank','squatchair','hinge','lunge']},
+ A2p:{title:'A2进阶：肩胛上旋准备',desc:'加入墙面滑手，为以后下拉和推胸做准备。',items:['breathing','chin','wallplus','scap','pronew','proneY','wallslide','doorway']},
+ B2p:{title:'B2进阶：下肢单腿控制',desc:'加入分腿蹲准备，提高髋膝骨盆控制。',items:['deadbug','birddog','bridge','sideplank','hinge','lunge']},
+ gymA:{title:'健身房A：背 + 臀腿 + 核心',desc:'用器械增加肌肉，但以肩胛稳定、腰不代偿为第一标准。',items:['walk','row','legpress','curl','hipthrust','deadbug']},
+ gymB:{title:'健身房B：下拉 + 轻推 + 臀腿',desc:'恢复拉和推的训练模式，重量必须轻。',items:['walk','pulldown','row','chest','legpress','facepull','sideplank']},
+ upperPull:{title:'上肢拉：正式增肌过渡',desc:'保留肩胛维护，逐渐进入正常背部训练。',items:['pulldown','row','facepull','pronew']},
+ upperPush:{title:'上肢推：轻推胸 + 轻肩部',desc:'只在肩不痛、不耸肩时做。',items:['chest','lateral','shoulder','wallplus']},
+ lower:{title:'下肢 + 核心',desc:'腿、臀、核心训练，继续避免腰代偿。',items:['legpress','curl','hipthrust','sideplank','deadbug']}
+};
+const phases=[
+ {from:1,to:1,name:'第0阶段：第1周，降代偿周',goal:'训练后斜方肌不再酸爆，动作中不明显耸肩。'},
+ {from:2,to:4,name:'第1阶段：第2–4周，建立正确发力',goal:'让前锯肌、下斜方肌、核心、臀部开始工作。'},
+ {from:5,to:8,name:'第2阶段：第5–8周，强化基础控制',goal:'从康复动作过渡到基础力量，为进健身房做准备。'},
+ {from:9,to:16,name:'第3阶段：第9–16周，健身房康复型增肌',goal:'用器械增肌，但不让健身加重肩颈腰。'},
+ {from:17,to:20,name:'第4阶段：第17周以后，正常增肌过渡',goal:'康复动作变成热身和维护，逐步进入正式增肌。'}
+];
+function schedule(w){if(w<=1)return{mon:'A0',tue:'light',wed:'B0',thu:'A0',fri:'light',sat:'B0',sun:'rest'};if(w<=4)return{mon:'A1',tue:'B1',wed:'light',thu:'A1',fri:'B1',sat:'light',sun:'rest'};if(w<=6)return{mon:'A2',tue:'B2',wed:'light',thu:'A2',fri:'B2',sat:'reset',sun:'rest'};if(w==7)return{mon:'A2p',tue:'B2p',wed:'light',thu:'A2p',fri:'B2p',sat:'light',sun:'rest'};if(w==8)return{mon:'A2',tue:'B2',wed:'light',thu:'A2',fri:'B2',sat:'walk',sun:'rest'};if(w<=12)return{mon:'gymA',tue:'reset',wed:'gymB',thu:'light',fri:'gymA',sat:'walk',sun:'rest'};if(w<=16)return{mon:'gymA',tue:'A2',wed:'gymB',thu:'light',fri:'gymA',sat:'B2',sun:'rest'};return{mon:'upperPull',tue:'lower',wed:'rest',thu:'upperPush',fri:'lower',sat:'A2',sun:'rest'}}
+workouts.walk=workouts.rest;
+let selectedWeek=currentWeekCalc(),selectedDay=new Date().getDay(),activeTab='today';
+function currentWeekCalc(){const s=new Date(START_DATE+'T00:00:00');const n=new Date();return Math.max(1,Math.min(20,Math.floor((n-s)/604800000)+1))}
+function phaseOf(w){return phases.find(p=>w>=p.from&&w<=p.to)||phases[phases.length-1]}
+function renderWeeks(){const el=document.getElementById('weekList');el.innerHTML='';for(let i=1;i<=20;i++){const b=document.createElement('button');b.textContent=`第${i}周 · ${phaseOf(i).name.split('，')[0]}`;b.className=i==selectedWeek?'active':'';b.onclick=()=>{selectedWeek=i;renderAll()};el.appendChild(b)}}
+function renderDayBar(){const el=document.getElementById('dayBar');el.innerHTML='';for(let i=1;i<=7;i++){const idx=i%7;const b=document.createElement('button');b.textContent=days[idx];b.className=(idx==selectedDay?'active ':'')+(idx==new Date().getDay()&&selectedWeek==currentWeekCalc()?'today':'');b.onclick=()=>{selectedDay=idx;renderAll()};el.appendChild(b)}}
+function renderWorkout(){const key=schedule(selectedWeek)[dayKeys[selectedDay]]||'rest';const w=workouts[key];document.getElementById('workoutTitle').textContent=w.title;document.getElementById('workoutDesc').textContent=w.desc;document.getElementById('phaseBadge').textContent=phaseOf(selectedWeek).name;const list=document.getElementById('exerciseList');list.innerHTML='';w.items.forEach(id=>list.appendChild(exerciseCard(ex[id])))}
+function exerciseCard(a){const d=document.createElement('div');d.className='exercise';d.innerHTML=`<h3>${a.name}</h3><div class="meta"><span>${a.amount}</span></div><div class="cols"><div class="box"><b>动作目标</b><p>${a.goal}</p></div><div class="box"><b>动作细节</b><p>${a.detail}</p></div><div class="box"><b>注意事项</b><p>${a.note}</p></div></div>`;return d}
+function renderFullPlan(){let html='';phases.forEach(p=>{html+=`<section class="section"><h3>${p.name}</h3><p class="sub">${p.goal}</p>`;for(let w=p.from;w<=p.to;w++){html+=`<div class="exercise"><h3>第${w}周</h3><div class="cols">`;const s=schedule(w);[1,2,3,4,5,6,0].forEach(di=>{const wk=workouts[s[dayKeys[di]]||'rest'];html+=`<div class="box"><b>${days[di]}</b><p>${wk.title}</p></div>`});html+='</div></div>'}html+='</section>'});document.getElementById('fullPlan').innerHTML=html}
+function renderRules(){const el=document.getElementById('rulesList');el.innerHTML='';Object.values(ex).forEach(a=>el.appendChild(exerciseCard(a)))}
+function renderScores(){const box=document.getElementById('scoreBox');box.innerHTML='';scores.forEach(s=>{const row=document.createElement('div');row.className='scoreline';row.innerHTML=`<label>${s}</label><input type="range" min="0" max="10" value="0" data-score="${s}" oninput="this.nextElementSibling.textContent=this.value"><b>0</b>`;box.appendChild(row)})}
+function storage(){return JSON.parse(localStorage.getItem('rehabRecords')||'{}')}
+function setStorage(v){localStorage.setItem('rehabRecords',JSON.stringify(v))}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function saveRecord(){const r=storage();const scoresObj={};document.querySelectorAll('[data-score]').forEach(i=>scoresObj[i.dataset.score]=Number(i.value));r[todayKey()]={date:todayKey(),week:selectedWeek,day:days[selectedDay],workout:document.getElementById('workoutTitle').textContent,done:document.getElementById('done').checked,scores:scoresObj,note:document.getElementById('note').value,updated:new Date().toLocaleString()};setStorage(r);renderHistory();renderTop();alert('已保存')}
+function renderHistory(){const h=document.getElementById('history');const r=storage();const arr=Object.values(r).sort((a,b)=>b.date.localeCompare(a.date));h.innerHTML=arr.length?'':'<p class="sub">还没有记录。</p>';arr.forEach(x=>{const avg=Math.round(Object.values(x.scores||{}).reduce((a,b)=>a+b,0)/Math.max(1,Object.values(x.scores||{}).length)*10)/10;const div=document.createElement('div');div.className='hist';div.innerHTML=`<b>${x.date} · ${x.workout}</b><small> 第${x.week}周 · ${x.day} · ${x.done?'已完成':'未完成'} · 平均不适 ${avg}/10</small><p>${x.note||'无备注'}</p>`;h.appendChild(div)})}
+function renderTop(){const cw=currentWeekCalc();document.getElementById('todayName').textContent=days[new Date().getDay()];document.getElementById('currentWeek').textContent='第'+cw+'周';document.getElementById('currentPhase').textContent=phaseOf(cw).name.split('：')[0];document.getElementById('doneCount').textContent=Object.keys(storage()).length}
+function switchTab(t){activeTab=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab==t));document.querySelectorAll('.panel').forEach(p=>p.style.display='none');document.getElementById(t+'Panel').style.display='block'}
+function exportJSON(){download('rehab-records.json',JSON.stringify(storage(),null,2),'application/json')}
+function exportCSV(){const arr=Object.values(storage());let csv='date,week,day,workout,done,note,'+scores.join(',')+'\n';arr.forEach(r=>{csv+=[r.date,r.week,r.day,r.workout,r.done,`"${(r.note||'').replaceAll('"','""')}"`,...scores.map(s=>r.scores?.[s]??0)].join(',')+'\n'});download('rehab-records.csv',csv,'text/csv')}
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{try{setStorage(JSON.parse(reader.result));renderHistory();renderTop();alert('导入成功')}catch(err){alert('导入失败')}};reader.readAsText(f)}
+function clearAll(){if(confirm('确定清空所有本地记录？')){localStorage.removeItem('rehabRecords');renderHistory();renderTop()}}
+function setTodayWeek(){selectedWeek=currentWeekCalc();selectedDay=new Date().getDay();renderAll()}
+function renderAll(){renderTop();renderWeeks();renderDayBar();renderWorkout();renderFullPlan();renderRules();renderHistory();switchTab(activeTab)}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));renderScores();renderAll();
+</script>
+</body>
+</html>

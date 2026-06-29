@@ -1,69 +1,66 @@
-/* Fix timer card button spacing. This file is loaded last. */
-.timer{
-  gap:18px !important;
+/* Final timer control fix: force real layout gaps without changing HTML. Loaded last. */
+#timer .timer{
+  gap:20px !important;
   align-items:stretch !important;
 }
-.timer .box{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:flex-start !important;
-  gap:12px !important;
-  padding:22px 18px !important;
+#timer .timer .box{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(116px, max-content)) !important;
+  justify-content:center !important;
+  align-content:start !important;
+  justify-items:center !important;
+  gap:14px 18px !important;
+  padding:24px 22px !important;
+  text-align:center !important;
 }
-.timer .box b{
-  margin-bottom:2px !important;
-}
-.timer .time{
+#timer .timer .box > b,
+#timer .timer .box > .time,
+#timer .timer .box > .search,
+#timer .timer .box > select,
+#timer .timer .box > p{
+  grid-column:1 / -1 !important;
+  justify-self:stretch !important;
   margin:0 !important;
 }
-.timer .box .search,
-.timer .box select{
-  margin:0 0 2px 0 !important;
+#timer .timer .box > b,
+#timer .timer .box > .time,
+#timer .timer .box > p{
+  justify-self:center !important;
+}
+#timer .timer .box > .search,
+#timer .timer .box > select{
   width:100% !important;
   max-width:420px !important;
+  margin-bottom:0 !important;
 }
-.timer .box .btn{
-  margin:0 7px !important;
-  min-width:112px !important;
+#timer .timer .box > button.btn{
+  grid-column:auto !important;
+  margin:0 !important;
+  min-width:116px !important;
+  width:auto !important;
   white-space:nowrap !important;
 }
-.timer .box .btn + .btn{
-  margin-left:10px !important;
+#timer .timer .box > button.btn.primary{
+  min-width:138px !important;
 }
-.timer .box button{
-  flex:0 0 auto !important;
+#timer .timer .box > button.btn:only-of-type{
+  grid-column:1 / -1 !important;
+  justify-self:center !important;
 }
-#trainTimerBtn,
-#restTimerBtn,
-#breathBtn{
-  min-width:128px !important;
-}
-#trainResetBtn,
-#restResetBtn{
-  min-width:92px !important;
-}
-#breathBtn{
-  margin-top:0 !important;
+#timer .timer .box > #breathBtn{
+  grid-column:1 / -1 !important;
+  justify-self:center !important;
 }
 @media(max-width:920px){
-  .timer{
-    gap:14px !important;
+  #timer .timer .box{
+    grid-template-columns:1fr !important;
+    gap:12px !important;
+    padding:20px 16px !important;
   }
-  .timer .box{
-    align-items:stretch !important;
-    text-align:center !important;
-  }
-  .timer .box .btn{
+  #timer .timer .box > button.btn,
+  #timer .timer .box > button.btn.primary{
+    grid-column:1 / -1 !important;
     width:100% !important;
-    min-width:0 !important;
-    margin:0 !important;
-  }
-  .timer .box .btn + .btn{
-    margin-left:0 !important;
-    margin-top:10px !important;
-  }
-  #trainTimerBtn,#restTimerBtn,#breathBtn,#trainResetBtn,#restResetBtn{
     min-width:0 !important;
   }
 }

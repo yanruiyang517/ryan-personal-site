@@ -20,4 +20,6 @@
     });
     root.innerHTML = html;
   };
+  var css=document.createElement('link');css.rel='stylesheet';css.href='health-enhancements.css?v=0630';document.head.appendChild(css);
+  var js=document.createElement('script');js.src='health-enhancements.js?v=0630';document.body.appendChild(js);
 })();

@@ -1,4 +1,4 @@
-// Final mobile layout patch. app.html already loads this file last.
+// Final mobile layout patch and full plan redesign loader. app.html loads this file last.
 (function(){
   var css = `
   @media(max-width:920px){
@@ -19,12 +19,10 @@
     #timer .timer .box>button.btn{width:100%!important;min-width:0!important;margin:0!important}
     #record .note{width:100%!important;min-height:240px!important;font-size:16px!important;line-height:1.75!important;padding:16px!important;resize:vertical!important;overflow:auto!important}
     .score{grid-template-columns:92px 1fr 32px!important;gap:8px!important}.calendar{grid-template-columns:repeat(2,1fr)!important}
-    table{display:block!important;overflow-x:auto!important;white-space:nowrap!important}
     .nav{position:fixed!important;left:10px!important;right:10px!important;bottom:10px!important;top:auto!important;z-index:100!important;overflow-x:auto!important;gap:8px!important;padding:8px!important}
     .nav .btn{flex:0 0 auto!important;min-width:max-content!important;font-size:13px!important}
   }`;
-  var s=document.createElement('style');
-  s.setAttribute('data-mobile-audit','true');
-  s.textContent=css;
-  document.head.appendChild(s);
+  var s=document.createElement('style');s.setAttribute('data-mobile-audit','true');s.textContent=css;document.head.appendChild(s);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='plan-redesign.css?v=0630';document.head.appendChild(l);
+  var j=document.createElement('script');j.src='plan-redesign.js?v=0630';document.body.appendChild(j);
 })();

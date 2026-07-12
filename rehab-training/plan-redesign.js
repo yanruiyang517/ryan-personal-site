@@ -28,6 +28,11 @@
   health.onload=function(){
     var checkin=document.createElement('script');
     checkin.src='checkin-mode.js?v=0712';
+    checkin.onload=function(){
+      var safety=document.createElement('script');
+      safety.src='checkin-coach.js?v=0712';
+      document.body.appendChild(safety);
+    };
     document.body.appendChild(checkin);
   };
   document.body.appendChild(health);

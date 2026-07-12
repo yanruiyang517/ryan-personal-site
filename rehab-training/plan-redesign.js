@@ -21,17 +21,23 @@
     root.innerHTML = html;
   };
   function loadCss(href){var l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l)}
-  loadCss('health-enhancements.css?v=0713p');
-  loadCss('checkin-mode.css?v=0713p');
-  loadCss('minimal-theme.css?v=0713p');
+  loadCss('health-enhancements.css?v=0713q');
+  loadCss('checkin-mode.css?v=0713q');
+  loadCss('minimal-theme.css?v=0713q');
+  loadCss('layout-v3.css?v=0713q');
   var health=document.createElement('script');
-  health.src='health-enhancements.js?v=0713p';
+  health.src='health-enhancements.js?v=0713q';
   health.onload=function(){
     var checkin=document.createElement('script');
-    checkin.src='checkin-mode.js?v=0713p';
+    checkin.src='checkin-mode.js?v=0713q';
     checkin.onload=function(){
       var safety=document.createElement('script');
-      safety.src='checkin-coach.js?v=0713p';
+      safety.src='checkin-coach.js?v=0713q';
+      safety.onload=function(){
+        var layout=document.createElement('script');
+        layout.src='layout-v3.js?v=0713q';
+        document.body.appendChild(layout);
+      };
       document.body.appendChild(safety);
     };
     document.body.appendChild(checkin);

@@ -1,0 +1,186 @@
+/* Button system v6 — clear hierarchy, calm color, thumb-friendly layout */
+:root{
+  --action:#4f5bd5;
+  --action-hover:#414bbd;
+  --action-soft:#eef0ff;
+  --success:#17845b;
+  --success-hover:#116b49;
+  --success-soft:#eaf7f1;
+  --danger:#c44a44;
+  --danger-soft:#fff2f1;
+  --button-ink:#24262b;
+  --button-muted:#6f746f;
+  --button-line:rgba(17,18,20,.11);
+  --button-surface:rgba(255,255,255,.86);
+}
+body.dark{
+  --action:#7b89ff;
+  --action-hover:#8d99ff;
+  --action-soft:rgba(123,137,255,.15);
+  --success:#51bb8c;
+  --success-hover:#65c99c;
+  --success-soft:rgba(81,187,140,.13);
+  --danger:#ff8a83;
+  --danger-soft:rgba(255,138,131,.10);
+  --button-ink:#f4f5f7;
+  --button-muted:#a7adb5;
+  --button-line:rgba(255,255,255,.11);
+  --button-surface:rgba(255,255,255,.055);
+}
+.btn,button.week,button.day{
+  min-height:46px!important;
+  padding:10px 17px!important;
+  border:1px solid var(--button-line)!important;
+  border-radius:999px!important;
+  background:var(--button-surface)!important;
+  color:var(--button-ink)!important;
+  box-shadow:0 1px 2px rgba(17,18,20,.04),0 7px 20px rgba(17,18,20,.035)!important;
+  font-weight:760!important;
+  letter-spacing:-.015em!important;
+  line-height:1.2!important;
+  transform:none!important;
+  transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .12s ease!important;
+  -webkit-tap-highlight-color:transparent!important;
+}
+.btn::before,button.week::before,button.day::before,.actions .btn.primary::after{display:none!important;content:none!important}
+.btn:hover,button.week:hover,button.day:hover{
+  background:#fff!important;
+  border-color:rgba(79,91,213,.24)!important;
+  box-shadow:0 2px 4px rgba(17,18,20,.05),0 10px 26px rgba(17,18,20,.07)!important;
+  transform:translateY(-1px)!important;
+}
+body.dark .btn:hover,body.dark button.week:hover,body.dark button.day:hover{background:rgba(255,255,255,.09)!important}
+.btn:active,button.week:active,button.day:active{transform:scale(.975)!important;box-shadow:0 1px 4px rgba(17,18,20,.08)!important}
+.btn:focus-visible,button.week:focus-visible,button.day:focus-visible{outline:none!important;box-shadow:0 0 0 4px rgba(79,91,213,.18)!important}
+.btn:disabled{opacity:.52!important;cursor:not-allowed!important;transform:none!important;box-shadow:none!important}
+.btn.primary,.nav .btn.active,button.week.active,button.day.active{
+  background:var(--action)!important;
+  color:#fff!important;
+  border-color:var(--action)!important;
+  box-shadow:0 8px 22px rgba(79,91,213,.22)!important;
+}
+.btn.primary:hover,.nav .btn.active:hover,button.week.active:hover,button.day.active:hover{
+  background:var(--action-hover)!important;
+  border-color:var(--action-hover)!important;
+  box-shadow:0 10px 28px rgba(79,91,213,.28)!important;
+}
+.btn.green{
+  background:var(--success)!important;
+  color:#fff!important;
+  border-color:var(--success)!important;
+  box-shadow:0 8px 22px rgba(23,132,91,.20)!important;
+}
+.btn.green:hover{background:var(--success-hover)!important;border-color:var(--success-hover)!important;box-shadow:0 10px 28px rgba(23,132,91,.25)!important}
+.btn.red{
+  background:transparent!important;
+  color:var(--danger)!important;
+  border-color:rgba(196,74,68,.27)!important;
+  box-shadow:none!important;
+}
+.btn.red:hover{background:var(--danger-soft)!important;color:var(--danger)!important;border-color:rgba(196,74,68,.42)!important;box-shadow:none!important}
+.secondary-v4{background:transparent!important}
+
+/* Hero: one unmistakable primary action, two quiet secondary actions. */
+.hero-actions-v4{gap:10px!important}
+.hero-actions-v4 .btn{min-height:52px!important;padding:13px 21px!important}
+.hero-actions-v4 .btn.primary{
+  background:#fff!important;
+  color:#111214!important;
+  border-color:#fff!important;
+  box-shadow:0 10px 28px rgba(255,255,255,.13)!important;
+}
+.hero-actions-v4 .btn.primary:hover{background:#f4f4f2!important;border-color:#f4f4f2!important;box-shadow:0 13px 34px rgba(255,255,255,.17)!important}
+.hero-actions-v4 .btn.secondary-v4{
+  background:rgba(255,255,255,.075)!important;
+  color:#fff!important;
+  border-color:rgba(255,255,255,.16)!important;
+  box-shadow:none!important;
+}
+.hero-actions-v4 .btn.secondary-v4:hover{background:rgba(255,255,255,.13)!important;border-color:rgba(255,255,255,.24)!important}
+
+/* Main workout actions: primary / neutral / completion. */
+#today .tools{
+  display:grid!important;
+  grid-template-columns:minmax(180px,1.2fr) minmax(150px,.8fr) minmax(170px,.9fr)!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+#today .tools .btn{width:100%!important;min-height:48px!important;margin:0!important}
+#completeAllBtn{background:var(--action)!important;color:#fff!important;border-color:var(--action)!important;box-shadow:0 8px 22px rgba(79,91,213,.20)!important}
+#completeAllBtn:hover{background:var(--action-hover)!important;border-color:var(--action-hover)!important}
+#clearChecksBtn{background:var(--button-surface)!important;color:var(--button-muted)!important}
+#openRecordBtn{background:var(--success)!important;color:#fff!important;border-color:var(--success)!important;box-shadow:0 8px 22px rgba(23,132,91,.19)!important}
+#openRecordBtn:hover{background:var(--success-hover)!important;border-color:var(--success-hover)!important}
+
+/* Timer buttons: start is prominent, reset stays quiet. */
+#timer .timer .box>button.btn.primary{background:var(--action)!important;color:#fff!important;border-color:var(--action)!important}
+#timer .timer .box>button.btn:not(.primary){background:transparent!important;color:var(--button-muted)!important;box-shadow:none!important}
+#timer .timer .box>button.btn:not(.primary):hover{background:var(--action-soft)!important;color:var(--action)!important;border-color:transparent!important}
+
+/* Check-in buttons: completion green, undo restrained red. */
+#checkinBtn,.checkin-main-btn{background:var(--success)!important;color:#fff!important;border-color:var(--success)!important;box-shadow:0 10px 26px rgba(23,132,91,.22)!important}
+#checkinBtn:hover,.checkin-main-btn:hover{background:var(--success-hover)!important;border-color:var(--success-hover)!important}
+#undoCheckinBtn{background:transparent!important;color:var(--danger)!important;border-color:rgba(196,74,68,.25)!important;box-shadow:none!important}
+#undoCheckinBtn:hover{background:var(--danger-soft)!important}
+#checkinTodayBtn{background:var(--action-soft)!important;color:var(--action)!important;border-color:transparent!important;box-shadow:none!important}
+#checkinYesterdayBtn{background:var(--button-surface)!important;color:var(--button-muted)!important;box-shadow:none!important}
+.checkin-backup .btn{box-shadow:none!important}
+#checkinClear{background:transparent!important;color:var(--danger)!important;border-color:rgba(196,74,68,.25)!important}
+
+/* Wake lock, settings and guide actions. */
+[data-wake-toggle].green{background:var(--success)!important;color:#fff!important;border-color:var(--success)!important}
+#saveStartBtn,#guideOk{background:var(--action)!important;color:#fff!important;border-color:var(--action)!important}
+#todayBtn,#guideLater{background:transparent!important;color:var(--button-muted)!important;box-shadow:none!important}
+
+/* Exercise controls become compact status controls rather than competing CTA buttons. */
+.exercise-actions-v3 .check{
+  border:1px solid var(--button-line)!important;
+  background:var(--button-surface)!important;
+  color:var(--button-muted)!important;
+  box-shadow:none!important;
+}
+.exercise-actions-v3 .check:has(input:checked){background:var(--success-soft)!important;color:var(--success)!important;border-color:rgba(23,132,91,.20)!important}
+.exercise-actions-v3 input{accent-color:var(--success)!important}
+.exercise-expand-v3{background:transparent!important;color:var(--button-muted)!important;border-color:var(--button-line)!important;box-shadow:none!important}
+.exercise.expanded .exercise-expand-v3{background:var(--action-soft)!important;color:var(--action)!important;border-color:transparent!important}
+
+/* Navigation uses the same accent as the rest of the product. */
+.nav .btn.active,.nav>.nav-more-v3>.btn.active{background:var(--action)!important;color:#fff!important;border-color:var(--action)!important}
+.nav-more-menu-v3 .btn.active{background:var(--action-soft)!important;color:var(--action)!important;border-color:transparent!important;box-shadow:none!important}
+
+@media(max-width:920px){
+  .btn,button.week,button.day{min-height:44px!important;padding:9px 13px!important}
+  .hero-actions-v4{grid-template-columns:1fr 1fr!important;gap:9px!important}
+  .hero-actions-v4 .btn:first-child{grid-column:1/-1!important}
+  .hero-actions-v4 .btn{min-height:50px!important;padding:11px 10px!important}
+
+  #today .tools{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  #today .tools #completeAllBtn{grid-column:1/-1!important}
+  #today .tools .btn{min-height:47px!important;font-size:12px!important;padding:10px 8px!important}
+
+  #timer .timer .box>button.btn{min-height:46px!important;font-size:12px!important}
+  #timer .timer .box>button.btn.primary{box-shadow:0 7px 18px rgba(79,91,213,.18)!important}
+
+  .checkin-actions{grid-template-columns:1fr!important;gap:8px!important}
+  .checkin-actions .btn{width:100%!important;min-height:49px!important}
+  .checkin-backup{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .checkin-backup .btn{min-height:44px!important}
+  .checkin-backup .btn.red{grid-column:1/-1!important}
+
+  .side .tools{grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .side .tools .btn{width:100%!important;min-height:46px!important;font-size:12px!important}
+
+  body.mobile-v5 .nav>.btn,body.mobile-v5 .nav>.nav-more-v3>.btn{background:transparent!important;color:#777b76!important;border:0!important;box-shadow:none!important}
+  body.mobile-v5 .nav>.btn.active,body.mobile-v5 .nav>.nav-more-v3>.btn.active{background:var(--action)!important;color:#fff!important;box-shadow:0 7px 18px rgba(79,91,213,.25)!important}
+  body.dark.mobile-v5 .nav>.btn.active,body.dark.mobile-v5 .nav>.nav-more-v3>.btn.active{background:var(--action)!important;color:#fff!important}
+}
+
+@media(max-width:390px){
+  .hero-actions-v4 .btn{font-size:11.5px!important}
+  #today .tools .btn{font-size:11.5px!important}
+  .checkin-date-controls .btn{padding-left:8px!important;padding-right:8px!important}
+}
+
+@media(hover:none) and (pointer:coarse){
+  .btn:hover,button.week:hover,button.day:hover{transform:none!important}
+}

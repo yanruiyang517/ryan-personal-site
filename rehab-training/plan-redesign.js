@@ -21,21 +21,27 @@
     root.innerHTML = html;
   };
   function loadCss(href){var l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l)}
-  loadCss('health-enhancements.css?v=0713q');
-  loadCss('checkin-mode.css?v=0713q');
-  loadCss('minimal-theme.css?v=0713q');
-  loadCss('layout-v3.css?v=0713q');
+  loadCss('health-enhancements.css?v=0713r');
+  loadCss('checkin-mode.css?v=0713r');
+  loadCss('minimal-theme.css?v=0713r');
+  loadCss('layout-v3.css?v=0713r');
+  loadCss('premium-v4.css?v=0713r');
   var health=document.createElement('script');
-  health.src='health-enhancements.js?v=0713q';
+  health.src='health-enhancements.js?v=0713r';
   health.onload=function(){
     var checkin=document.createElement('script');
-    checkin.src='checkin-mode.js?v=0713q';
+    checkin.src='checkin-mode.js?v=0713r';
     checkin.onload=function(){
       var safety=document.createElement('script');
-      safety.src='checkin-coach.js?v=0713q';
+      safety.src='checkin-coach.js?v=0713r';
       safety.onload=function(){
         var layout=document.createElement('script');
-        layout.src='layout-v3.js?v=0713q';
+        layout.src='layout-v3.js?v=0713r';
+        layout.onload=function(){
+          var premium=document.createElement('script');
+          premium.src='premium-v4.js?v=0713r';
+          document.body.appendChild(premium);
+        };
         document.body.appendChild(layout);
       };
       document.body.appendChild(safety);

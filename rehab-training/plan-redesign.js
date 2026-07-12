@@ -21,16 +21,16 @@
     root.innerHTML = html;
   };
   function loadCss(href){var l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l)}
-  loadCss('health-enhancements.css?v=0712');
-  loadCss('checkin-mode.css?v=0712');
+  loadCss('health-enhancements.css?v=0713');
+  loadCss('checkin-mode.css?v=0713');
   var health=document.createElement('script');
-  health.src='health-enhancements.js?v=0712';
+  health.src='health-enhancements.js?v=0713';
   health.onload=function(){
     var checkin=document.createElement('script');
-    checkin.src='checkin-mode.js?v=0712';
+    checkin.src='checkin-mode.js?v=0713';
     checkin.onload=function(){
       var safety=document.createElement('script');
-      safety.src='checkin-coach.js?v=0712';
+      safety.src='checkin-coach.js?v=0713';
       document.body.appendChild(safety);
     };
     document.body.appendChild(checkin);

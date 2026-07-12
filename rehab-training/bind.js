@@ -22,6 +22,6 @@
     .nav .btn{flex:0 0 auto!important;min-width:max-content!important;font-size:13px!important}
   }`;
   var s=document.createElement('style');s.setAttribute('data-mobile-audit','true');s.textContent=css;document.head.appendChild(s);
-  var l=document.createElement('link');l.rel='stylesheet';l.href='plan-redesign.css?v=0712';document.head.appendChild(l);
-  var j=document.createElement('script');j.src='plan-redesign.js?v=0712';document.body.appendChild(j);
+  var l=document.createElement('link');l.rel='stylesheet';l.href='plan-redesign.css?v=0713';document.head.appendChild(l);
+  var j=document.createElement('script');j.src='plan-redesign.js?v=0713';document.body.appendChild(j);
 })();

@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#5b67d8">
+  <meta name="theme-color" content="#111214">
   <meta name="description" content="肩颈肩胛与腰背康复训练动态计划、每日打卡、计时器、周报和进阶判断。">
   <title>康复训练 Pro · 每日打卡系统</title>
-  <link rel="stylesheet" href="style.css?v=0713q">
-  <link rel="stylesheet" href="ui-buttons.css?v=0713q">
-  <link rel="stylesheet" href="ui-layout-fix.css?v=0713q">
-  <link rel="stylesheet" href="timer-layout-fix.css?v=0713q">
-  <link rel="stylesheet" href="minimal-theme.css?v=0713q">
-  <link rel="stylesheet" href="layout-v3.css?v=0713q">
+  <link rel="stylesheet" href="style.css?v=0713r">
+  <link rel="stylesheet" href="ui-buttons.css?v=0713r">
+  <link rel="stylesheet" href="ui-layout-fix.css?v=0713r">
+  <link rel="stylesheet" href="timer-layout-fix.css?v=0713r">
+  <link rel="stylesheet" href="minimal-theme.css?v=0713r">
+  <link rel="stylesheet" href="layout-v3.css?v=0713r">
+  <link rel="stylesheet" href="premium-v4.css?v=0713r">
 </head>
-<body class="tab-today">
+<body class="tab-today experience-v4">
   <div class="app">
     <header class="top">
       <div class="brand"><div class="logo">康</div><div><h1>康复训练 Pro</h1><p>训练计划 · 计时 · 每日打卡</p></div></div>
@@ -21,8 +22,35 @@
     </header>
     <nav class="nav" id="nav"></nav>
     <section class="hero">
-      <div class="card"><span class="pill">肩颈肩胛与腰背康复计划</span><h1 class="title">今日康复训练</h1><p class="sub">选择当前周和日期，按顺序完成动作；需要时使用计时器，结束后一键打卡。</p><div class="metrics"><div class="metric"><b id="mToday">-</b><span>今天</span></div><div class="metric"><b id="mWeek">-</b><span>当前周</span></div><div class="metric"><b id="mPhase">-</b><span>当前阶段</span></div><div class="metric"><b id="mStreak">0天</b><span>连续打卡</span></div><div class="metric"><b id="mDone">0次</b><span>累计打卡</span></div></div></div>
-      <div class="card"><h2 style="margin-top:0">训练安全提醒</h2><p id="coach" class="warning">身体不适时不要为了连续打卡硬练。</p><p class="ok">可以继续：训练后肩颈和腰没有更酸，呼吸自然，动作中不耸肩、不憋气。</p><p class="danger">立即停止：刺痛、麻木、放射痛、关节卡住、明显无力或疼痛持续加重。</p></div>
+      <section class="hero-stage-v4">
+        <div class="hero-copy-v4">
+          <div class="hero-kicker-v4">Today movement</div>
+          <h1 class="hero-title-v4">今天，完成比完美更重要。</h1>
+          <p class="hero-sub-v4" id="heroSubtitleV4">用稳定、自然的动作，把身体一点点练回来。只专注今天这一组。</p>
+          <div class="hero-actions-v4">
+            <button class="btn primary" type="button" data-v4-go="today">开始今天的训练</button>
+            <button class="btn secondary-v4" type="button" data-v4-go="timer">打开计时器</button>
+            <button class="btn secondary-v4" type="button" data-v4-go="record">完成后打卡</button>
+          </div>
+          <div class="hero-safety-v4">不追求疼痛和疲劳。出现刺痛、麻木、放射痛、卡住或明显无力时立即停止。</div>
+          <p id="coach" hidden>身体不适时不要为了连续打卡硬练。</p>
+        </div>
+        <div class="hero-visual-v4">
+          <div class="progress-orbit-v4" id="progressOrbitV4"><div><strong id="heroProgressV4">0%</strong><span>今日完成度</span></div></div>
+          <div class="hero-plan-v4">
+            <div><b id="heroWorkoutV4">今日训练</b><span>训练内容</span></div>
+            <div><b id="heroCountV4">0 个动作</b><span>动作数量</span></div>
+            <div><b id="heroMinutesV4">约 20 分钟</b><span>预计时间</span></div>
+          </div>
+        </div>
+        <div class="hero-metrics-v4 metrics">
+          <div class="metric"><b id="mToday">-</b><span>今天</span></div>
+          <div class="metric"><b id="mWeek">-</b><span>当前周</span></div>
+          <div class="metric"><b id="mPhase">-</b><span>当前阶段</span></div>
+          <div class="metric"><b id="mStreak">0天</b><span>连续打卡</span></div>
+          <div class="metric"><b id="mDone">0次</b><span>累计打卡</span></div>
+        </div>
+      </section>
     </section>
     <main class="layout">
       <aside class="card side"><h3>训练周与设置</h3><div class="weeks" id="weeks"></div><hr style="border:none;border-top:1px solid var(--line);margin:14px 0"><label class="sub">计划起始日期</label><input id="startDate" class="search" type="date"><div class="tools"><button class="btn primary" id="saveStartBtn">保存起始日</button><button class="btn" id="todayBtn">回到今天</button></div></aside>
@@ -38,10 +66,10 @@
     </main>
     <p class="footer">医疗提醒：这不是诊断。若出现持续加重、麻木放射、明显无力、外伤后疼痛、发热等情况，应及时就医。</p>
   </div>
-  <script src="compat.js?v=0713q"></script>
-  <script src="app.js?v=0713q"></script>
-  <script src="week-label-fix.js?v=0713q"></script>
-  <script src="missing-actions.js?v=0713q"></script>
-  <script src="bind.js?v=0713q"></script>
+  <script src="compat.js?v=0713r"></script>
+  <script src="app.js?v=0713r"></script>
+  <script src="week-label-fix.js?v=0713r"></script>
+  <script src="missing-actions.js?v=0713r"></script>
+  <script src="bind.js?v=0713r"></script>
 </body>
 </html>

@@ -20,6 +20,15 @@
     });
     root.innerHTML = html;
   };
-  var css=document.createElement('link');css.rel='stylesheet';css.href='health-enhancements.css?v=0630';document.head.appendChild(css);
-  var js=document.createElement('script');js.src='health-enhancements.js?v=0630';document.body.appendChild(js);
+  function loadCss(href){var l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l)}
+  loadCss('health-enhancements.css?v=0712');
+  loadCss('checkin-mode.css?v=0712');
+  var health=document.createElement('script');
+  health.src='health-enhancements.js?v=0712';
+  health.onload=function(){
+    var checkin=document.createElement('script');
+    checkin.src='checkin-mode.js?v=0712';
+    document.body.appendChild(checkin);
+  };
+  document.body.appendChild(health);
 })();

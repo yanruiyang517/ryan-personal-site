@@ -59,7 +59,7 @@
   function refresh(){
     var s=stats();
     var orbit=document.getElementById('progressOrbitV4');
-    if(orbit)orbit.style.setProperty('--p',s.percent);
+    if(orbit)orbit.style.setProperty('--progress',s.percent+'%');
     var progress=document.getElementById('heroProgressV4');if(progress)progress.textContent=s.percent+'%';
     var workoutName=document.getElementById('heroWorkoutV4');if(workoutName)workoutName.textContent=s.workout[0];
     var count=document.getElementById('heroCountV4');if(count)count.textContent=s.count+' 个动作';

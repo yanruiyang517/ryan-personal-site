@@ -23,11 +23,6 @@
   function loadCss(href){var l=document.createElement('link');l.rel='stylesheet';l.href=href;document.head.appendChild(l)}
   loadCss('health-enhancements.css?v=0713t');
   loadCss('checkin-mode.css?v=0713t');
-  loadCss('minimal-theme.css?v=0713t');
-  loadCss('layout-v3.css?v=0713t');
-  loadCss('premium-v4.css?v=0713t');
-  loadCss('premium-v4-fixes.css?v=0713t');
-  loadCss('mobile-v5.css?v=0713t');
   var health=document.createElement('script');
   health.src='health-enhancements.js?v=0713t';
   health.onload=function(){

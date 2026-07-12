@@ -2,9 +2,9 @@
 (function(){
   var css=document.createElement('link');
   css.rel='stylesheet';
-  css.href='plan-redesign.css?v=0713r';
+  css.href='plan-redesign.css?v=0713s';
   document.head.appendChild(css);
   var script=document.createElement('script');
-  script.src='plan-redesign.js?v=0713r';
+  script.src='plan-redesign.js?v=0713s';
   document.body.appendChild(script);
 })();

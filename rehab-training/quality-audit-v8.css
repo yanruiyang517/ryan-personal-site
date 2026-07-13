@@ -1,0 +1,40 @@
+/* Final quality audit v8 — consistency, accessibility, overflow and responsive details */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{min-width:0}
+img,svg,canvas{max-width:100%}
+button,input,select,textarea{font:inherit}
+button{touch-action:manipulation}
+.panel,.card,.exercise,.checkin-card,.timer .box,.plan-week-card{min-width:0}
+.exercise h3,.checkin-workout,.plan-day-work,.hist,.sub{overflow-wrap:anywhere}
+.nav{isolation:isolate}
+.btn:focus-visible,button.day:focus-visible,button.week:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(79,91,213,.24)!important;outline-offset:2px!important}
+[role="progressbar"]{position:relative}
+.timer .time{font-variant-numeric:tabular-nums}
+#reportCards .metric b{font-variant-numeric:tabular-nums}
+.cal{display:grid;place-content:center;text-align:center}
+.cal small{display:block;margin-top:3px;font-size:10px;line-height:1.2;color:var(--muted)}
+.cal.done small{color:#17845b;font-weight:800}
+.dark .cal.done small{color:#65c99c}
+.quality-toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom));z-index:500;max-width:min(420px,calc(100vw - 28px));transform:translate(-50%,18px);padding:11px 16px;border-radius:999px;background:rgba(17,18,20,.92);color:#fff;font-size:13px;font-weight:750;line-height:1.35;text-align:center;box-shadow:0 18px 50px rgba(17,18,20,.24);opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+.quality-toast.show{opacity:1;transform:translate(-50%,0)}
+.dark .quality-toast{background:rgba(244,245,247,.94);color:#111214}
+.checkin-date-controls input[type="date"]{background-position:right 14px center!important;background-repeat:no-repeat!important;background-size:17px 17px!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236f746f' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E")!important}
+.dark .checkin-date-controls input[type="date"]{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a7adb5' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M16 3v4M8 3v4M3 10h18'/%3E%3C/svg%3E")!important}
+@media(max-width:920px){
+  html{scroll-padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  body.mobile-v5 .app{overflow:clip}
+  body.mobile-v5 .quality-toast{bottom:calc(72px + env(safe-area-inset-bottom))}
+  body.mobile-v5 .calendar{overflow:hidden}
+  body.mobile-v5 .cal{min-height:62px!important;padding:6px 1px!important}
+  body.mobile-v5 .cal small{font-size:8.5px}
+  body.mobile-v5 .checkin-date-controls input[type="date"]{padding-right:42px!important;padding-left:42px!important}
+  body.mobile-v5 .nav-more-menu-v3{overscroll-behavior:contain}
+  body.mobile-v5 .side{overscroll-behavior:contain}
+  body.mobile-v5 .exercise-actions-v3 .check,body.mobile-v5 .exercise-expand-v3{touch-action:manipulation}
+}
+@media(max-width:360px){
+  body.mobile-v5 .cal{min-height:56px!important;font-size:8px!important}
+  body.mobile-v5 .checkin-date-controls input[type="date"]{padding-left:34px!important;padding-right:34px!important}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.quality-toast{transition:none}}

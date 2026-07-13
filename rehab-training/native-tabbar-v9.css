@@ -72,9 +72,21 @@
   body.mobile-v5 .nav>.nav-more-v3>.btn:active{background:var(--action-soft)!important;transform:scale(.97)!important}
   body.mobile-v5 .nav>.btn:before,
   body.mobile-v5 .nav>.nav-more-v3>.btn:before{
+    content:""!important;
+    display:block!important;
+    position:absolute!important;
+    left:50%!important;
     top:6px!important;
     width:18px!important;
     height:18px!important;
+    transform:translateX(-50%)!important;
+    background:currentColor!important;
+    mask-repeat:no-repeat!important;
+    mask-position:center!important;
+    mask-size:contain!important;
+    -webkit-mask-repeat:no-repeat!important;
+    -webkit-mask-position:center!important;
+    -webkit-mask-size:contain!important;
   }
   body.mobile-v5 .nav>.btn.active:after,
   body.mobile-v5 .nav>.nav-more-v3>.btn.active:after{

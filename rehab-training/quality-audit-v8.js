@@ -1,5 +1,4 @@
 (function(){
-  var DAY=86400000;
   var audioContext=null;
   var toastTimer=null;
 
@@ -93,11 +92,12 @@
   if(clearChecksBase){clearChecks=function(){if(confirm('清空当前日期的动作勾选？'))clearChecksBase()};window.clearChecks=clearChecks}
 
   sharePage=async function(){
-    var url=location.href.split('#')[0];
+    var url=location.origin+location.pathname;
     try{
-      if(navigator.share){await navigator.share({title:document.title,url:url});toast('已打开系统分享');return}
       if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(url);toast('网页地址已复制');return}
-      var area=document.createElement('textarea');area.value=url;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();var ok=document.execCommand('copy');area.remove();if(!ok)throw new Error('copy failed');toast('网页地址已复制');
+      var area=document.createElement('textarea');area.value=url;area.style.position='fixed';area.style.opacity='0';document.body.appendChild(area);area.select();var ok=document.execCommand('copy');area.remove();if(ok){toast('网页地址已复制');return}
+      if(navigator.share){await navigator.share({title:document.title,url:url});return}
+      throw new Error('copy failed');
     }catch(e){if(e&&e.name==='AbortError')return;toast('复制失败，请使用浏览器分享按钮')}
   };
   window.sharePage=sharePage;
@@ -110,10 +110,17 @@
         var imported=JSON.parse(reader.result);
         if(!plain(imported))throw new Error('invalid root');
         var records=plain(imported.records)?imported.records:{},checks=plain(imported.checks)?imported.checks:{};
-        var safeRecords={};Object.keys(records).forEach(function(k){if(/^\d{4}-\d{2}-\d{2}$/.test(k)&&plain(records[k]))safeRecords[k]=records[k]});
+        var safeRecords={};
+        Object.keys(records).forEach(function(k){
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(k)||!plain(records[k]))return;
+          var raw=records[k],rec=Object.assign({},raw,{date:k,done:!!raw.done,checkin:!!raw.checkin});
+          rec.before=plain(raw.before)?raw.before:{};rec.after=plain(raw.after)?raw.after:{};rec.flags=Array.isArray(raw.flags)?raw.flags.filter(function(v){return typeof v==='string'}):[];
+          rec.note=typeof raw.note==='string'?raw.note:'';rec.workout=typeof raw.workout==='string'?raw.workout:'康复训练';rec.day=typeof raw.day==='string'?raw.day:'';rec.week=Number.isFinite(Number(raw.week))?Number(raw.week):1;
+          safeRecords[k]=rec;
+        });
         var next=Object.assign({},def,imported,{records:safeRecords,checks:checks});
         if(typeof next.start!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(next.start))next.start=def.start;
-        next.dark=!!next.dark;data=next;saveData();if(document.getElementById('startDate'))document.getElementById('startDate').value=data.start;renderAll();toast('备份导入成功');
+        next.dark=!!next.dark;data=next;selectedWeek=weekNow();saveData();document.body.classList.toggle('dark',data.dark);if(document.getElementById('startDate'))document.getElementById('startDate').value=data.start;renderAll();toast('备份导入成功');
       }catch(e){toast('导入失败：请选择本站导出的 JSON 备份')}
       if(input)input.value='';
     };

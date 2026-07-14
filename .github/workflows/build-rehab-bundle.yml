@@ -180,14 +180,17 @@ jobs:
             dom.window.close();
           }, 1600);
           NODE
-          node /tmp/rehab-smoke.cjs
+          set -o pipefail
+          node /tmp/rehab-smoke.cjs 2>&1 | tee /tmp/rehab-smoke-output.txt
 
       - name: Upload smoke diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: rehab-smoke-diagnostics
-          path: /tmp/rehab-smoke-result.json
+          path: |
+            /tmp/rehab-smoke-output.txt
+            /tmp/rehab-smoke-result.json
           if-no-files-found: error
 
       - name: Verify bundle references

@@ -1,0 +1,194 @@
+name: Build rehab bundle
+
+on:
+  push:
+    paths:
+      - .github/workflows/build-rehab-bundle.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Preserve current entry and core source
+        run: |
+          set -euo pipefail
+          cd rehab-training
+          test -f legacy-app.html || cp app.html legacy-app.html
+          test -f legacy-app-core.js || cp app.js legacy-app-core.js
+
+      - name: Build app.css
+        run: |
+          set -euo pipefail
+          cd rehab-training
+          files=(
+            style.css
+            ui-buttons.css
+            ui-layout-fix.css
+            timer-layout-fix.css
+            minimal-theme.css
+            layout-v3.css
+            premium-v4.css
+            premium-v4-fixes.css
+            mobile-v5.css
+            button-system-v6.css
+            mobile-screenshot-fixes-v7.css
+            quality-audit-v8.css
+            native-tabbar-v9.css
+            plan-redesign.css
+            health-enhancements.css
+            checkin-mode.css
+          )
+          : > app.css.tmp
+          for file in "${files[@]}"; do
+            test -f "$file"
+            printf '\n/* ===== SOURCE: %s ===== */\n' "$file" >> app.css.tmp
+            cat "$file" >> app.css.tmp
+            printf '\n' >> app.css.tmp
+          done
+          mv app.css.tmp app.css
+
+      - name: Build app.js
+        run: |
+          set -euo pipefail
+          cd rehab-training
+          : > app.js.tmp
+          append() {
+            local file="$1"
+            test -f "$file"
+            printf '\n/* ===== SOURCE: %s ===== */\n' "$file" >> app.js.tmp
+            cat "$file" >> app.js.tmp
+            printf '\n' >> app.js.tmp
+          }
+          append compat.js
+          append legacy-app-core.js
+          append week-label-fix.js
+          append missing-actions.js
+
+          printf '\n/* ===== SOURCE: plan-redesign.js (renderPlan only) ===== */\n' >> app.js.tmp
+          awk '/function loadCss\(href\)/{exit} {print}' plan-redesign.js >> app.js.tmp
+          printf '\n})();\n' >> app.js.tmp
+
+          append health-enhancements.js
+          append checkin-mode.js
+          append checkin-coach.js
+          append layout-v3.js
+          append premium-v4.js
+          append mobile-v5.js
+          append quality-audit-v8.js
+          mv app.js.tmp app.js
+
+      - name: Replace entry with direct bundle loading
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('rehab-training/app.html')
+          html = p.read_text(encoding='utf-8')
+          html = re.sub(r'\n\s*<link rel="stylesheet" href="[^"]+">', '', html)
+          html = re.sub(r'\n\s*<script src="[^"]+"></script>', '', html)
+          html = html.replace('</head>', '  <link rel="stylesheet" href="app.css?v=0714bundle">\n</head>')
+          html = html.replace('</body>', '  <script src="app.js?v=0714bundle"></script>\n</body>')
+          html = html.replace('<p class="sub">正在加载一键打卡界面……</p>', '<p class="sub">自由选择实际锻炼日期，完成后点击一键打卡。</p>')
+          p.write_text(html, encoding='utf-8')
+          PY
+
+      - name: JavaScript syntax check
+        run: node --check rehab-training/app.js
+
+      - name: Install smoke-test dependency
+        run: npm install --no-save --no-package-lock jsdom@24
+
+      - name: Browser initialization smoke test
+        run: |
+          cat > /tmp/rehab-smoke.cjs <<'NODE'
+          const fs = require('fs');
+          const {JSDOM, VirtualConsole} = require('jsdom');
+          const dir = 'rehab-training';
+          const css = fs.readFileSync(`${dir}/app.css`, 'utf8');
+          const js = fs.readFileSync(`${dir}/app.js`, 'utf8').replace(/<\/script/gi, '<\\/script');
+          let html = fs.readFileSync(`${dir}/app.html`, 'utf8')
+            .replace(/<link rel="stylesheet" href="app\.css[^"]*">/, `<style>${css}</style>`)
+            .replace(/<script src="app\.js[^"]*"><\/script>/, `<script>${js}</script>`);
+
+          const errors = [];
+          const vc = new VirtualConsole();
+          vc.on('jsdomError', e => errors.push(String(e.message || e)));
+          vc.on('error', e => errors.push(String(e)));
+
+          const dom = new JSDOM(html, {
+            url: 'https://example.test/rehab-training/app.html',
+            runScripts: 'dangerously',
+            pretendToBeVisual: true,
+            virtualConsole: vc,
+            beforeParse(window) {
+              window.alert = () => {};
+              window.confirm = () => true;
+              window.prompt = () => null;
+              window.print = () => {};
+              window.scrollTo = () => {};
+              window.matchMedia = () => ({matches:false,addEventListener(){},removeEventListener(){}});
+              window.requestAnimationFrame = cb => setTimeout(cb, 0);
+              window.cancelAnimationFrame = id => clearTimeout(id);
+              window.HTMLElement.prototype.scrollIntoView = function(){};
+              window.URL.createObjectURL = () => 'blob:test';
+              window.URL.revokeObjectURL = () => {};
+              Object.defineProperty(window.navigator, 'vibrate', {value: () => true, configurable: true});
+              Object.defineProperty(window.navigator, 'clipboard', {value: {writeText: async () => {}}, configurable: true});
+              Object.defineProperty(window.navigator, 'wakeLock', {value: {request: async () => ({addEventListener(){},release: async () => {}})}, configurable: true});
+            }
+          });
+
+          setTimeout(() => {
+            const d = dom.window.document;
+            const checks = {
+              nav: d.querySelectorAll('#nav [data-tab]').length >= 3,
+              weeks: !!d.querySelector('#weekSelectV3'),
+              exercises: d.querySelectorAll('#exerciseList .exercise').length > 0,
+              checkin: !!d.querySelector('#checkinDateInput') && !!d.querySelector('#checkinBtn'),
+              timer: !!d.querySelector('#trainTimerBtn') && !!d.querySelector('#restTimerBtn'),
+              plan: typeof dom.window.renderPlan === 'function'
+            };
+            const failed = Object.entries(checks).filter(([,ok]) => !ok).map(([k]) => k);
+            if (errors.length || failed.length) {
+              console.error({errors, failed, checks});
+              process.exit(1);
+            }
+            console.log('Smoke test passed', checks);
+            dom.window.close();
+          }, 1400);
+          NODE
+          node /tmp/rehab-smoke.cjs
+
+      - name: Verify bundle references
+        run: |
+          set -euo pipefail
+          grep -q 'href="app.css?v=0714bundle"' rehab-training/app.html
+          grep -q 'src="app.js?v=0714bundle"' rehab-training/app.html
+          test "$(grep -c '<link rel="stylesheet"' rehab-training/app.html)" -eq 1
+          test "$(grep -c '<script src=' rehab-training/app.html)" -eq 1
+
+      - name: Commit bundled application
+        run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo 'No changes to commit'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rehab-training/app.html rehab-training/app.css rehab-training/app.js rehab-training/legacy-app.html rehab-training/legacy-app-core.js
+          git commit -m 'Bundle rehab site into app.css and app.js'
+          git push

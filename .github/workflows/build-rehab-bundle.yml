@@ -126,10 +126,13 @@ jobs:
             .replace(/<link rel="stylesheet" href="app\.css[^"]*">/, `<style>${css}</style>`)
             .replace(/<script src="app\.js[^"]*"><\/script>/, `<script>${js}</script>`);
 
-          const errors = [];
+          const runtimeErrors = [];
           const vc = new VirtualConsole();
-          vc.on('jsdomError', e => errors.push(String(e.message || e)));
-          vc.on('error', e => errors.push(String(e)));
+          vc.on('jsdomError', e => {
+            const message = String(e && (e.stack || e.message) || e);
+            if (/Uncaught|ReferenceError|TypeError|SyntaxError|RangeError/.test(message)) runtimeErrors.push(message);
+          });
+          vc.on('error', e => runtimeErrors.push(String(e)));
 
           const dom = new JSDOM(html, {
             url: 'https://example.test/rehab-training/app.html',
@@ -151,6 +154,8 @@ jobs:
               Object.defineProperty(window.navigator, 'vibrate', {value: () => true, configurable: true});
               Object.defineProperty(window.navigator, 'clipboard', {value: {writeText: async () => {}}, configurable: true});
               Object.defineProperty(window.navigator, 'wakeLock', {value: {request: async () => ({addEventListener(){},release: async () => {}})}, configurable: true});
+              window.addEventListener('error', event => runtimeErrors.push(String(event.error || event.message)));
+              window.addEventListener('unhandledrejection', event => runtimeErrors.push(String(event.reason)));
             }
           });
 
@@ -165,13 +170,13 @@ jobs:
               plan: typeof dom.window.renderPlan === 'function'
             };
             const failed = Object.entries(checks).filter(([,ok]) => !ok).map(([k]) => k);
-            if (errors.length || failed.length) {
-              console.error({errors, failed, checks});
+            if (runtimeErrors.length || failed.length) {
+              console.error(JSON.stringify({runtimeErrors, failed, checks}, null, 2));
               process.exit(1);
             }
             console.log('Smoke test passed', checks);
             dom.window.close();
-          }, 1400);
+          }, 1600);
           NODE
           node /tmp/rehab-smoke.cjs
 

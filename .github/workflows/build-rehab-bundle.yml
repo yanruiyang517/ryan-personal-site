@@ -170,8 +170,10 @@ jobs:
               plan: typeof dom.window.renderPlan === 'function'
             };
             const failed = Object.entries(checks).filter(([,ok]) => !ok).map(([k]) => k);
+            const result = {runtimeErrors, failed, checks};
+            fs.writeFileSync('/tmp/rehab-smoke-result.json', JSON.stringify(result, null, 2));
             if (runtimeErrors.length || failed.length) {
-              console.error(JSON.stringify({runtimeErrors, failed, checks}, null, 2));
+              console.error(JSON.stringify(result, null, 2));
               process.exit(1);
             }
             console.log('Smoke test passed', checks);
@@ -179,6 +181,14 @@ jobs:
           }, 1600);
           NODE
           node /tmp/rehab-smoke.cjs
+
+      - name: Upload smoke diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rehab-smoke-diagnostics
+          path: /tmp/rehab-smoke-result.json
+          if-no-files-found: error
 
       - name: Verify bundle references
         run: |

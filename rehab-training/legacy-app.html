@@ -6,7 +6,19 @@
   <meta name="theme-color" content="#111214">
   <meta name="description" content="肩颈肩胛与腰背康复训练动态计划、每日打卡、计时器、周报和进阶判断。">
   <title>康复训练 Pro · 每日打卡系统</title>
-  <link rel="stylesheet" href="app.css?v=0714bundle">
+  <link rel="stylesheet" href="style.css?v=0713z">
+  <link rel="stylesheet" href="ui-buttons.css?v=0713z">
+  <link rel="stylesheet" href="ui-layout-fix.css?v=0713z">
+  <link rel="stylesheet" href="timer-layout-fix.css?v=0713z">
+  <link rel="stylesheet" href="minimal-theme.css?v=0713z">
+  <link rel="stylesheet" href="layout-v3.css?v=0713z">
+  <link rel="stylesheet" href="premium-v4.css?v=0713z">
+  <link rel="stylesheet" href="premium-v4-fixes.css?v=0713z">
+  <link rel="stylesheet" href="mobile-v5.css?v=0713z">
+  <link rel="stylesheet" href="button-system-v6.css?v=0713z">
+  <link rel="stylesheet" href="mobile-screenshot-fixes-v7.css?v=0713z">
+  <link rel="stylesheet" href="quality-audit-v8.css?v=0713z">
+  <link rel="stylesheet" href="native-tabbar-v9.css?v=0713z">
 </head>
 <body class="tab-today experience-v4 mobile-v5">
   <div class="app">
@@ -51,7 +63,7 @@
       <section>
         <div class="card panel active" id="today"><div class="days" id="days"></div><div class="head"><div><h2 id="wTitle">-</h2><p id="wDesc" class="sub"></p></div><span class="tag" id="phaseTag"></span></div><div class="progress"><div class="bar" id="doneBar"></div></div><div class="tools"><button class="btn green" id="completeAllBtn">本组全选完成</button><button class="btn" id="clearChecksBtn">清空动作勾选</button><button class="btn" id="openRecordBtn">完成后打卡</button></div><div id="exerciseList"></div></div>
         <div class="card panel" id="timer"><h2>训练计时器</h2><div class="timer"><div class="box"><b>训练计时</b><div class="time" id="trainTime">00:00</div><button class="btn primary" id="trainTimerBtn">开始</button><button class="btn" id="trainResetBtn">归零</button></div><div class="box"><b>休息倒计时</b><div class="time" id="restTime">00:45</div><select id="restSec" class="search"><option value="30">30秒</option><option value="45" selected>45秒</option><option value="60">60秒</option><option value="90">90秒</option></select><button class="btn primary" id="restTimerBtn">开始</button><button class="btn" id="restResetBtn">重置</button></div><div class="box"><b>呼吸节奏</b><div class="time" id="breathText">吸气</div><p class="sub">4秒吸气 / 6秒呼气</p><button class="btn primary" id="breathBtn">开始</button></div></div></div>
-        <div class="card panel" id="record"><h2>每日打卡</h2><p class="sub">自由选择实际锻炼日期，完成后点击一键打卡。</p><div hidden><input type="checkbox" id="done"><div id="beforeScores"></div><div id="afterScores"></div><div id="flags"></div><textarea id="note"></textarea><div id="history"></div></div></div>
+        <div class="card panel" id="record"><h2>每日打卡</h2><p class="sub">正在加载一键打卡界面……</p><div hidden><input type="checkbox" id="done"><div id="beforeScores"></div><div id="afterScores"></div><div id="flags"></div><textarea id="note"></textarea><div id="history"></div></div></div>
         <div class="card panel" id="report"><h2>周报与训练进度</h2><div class="grid3" id="reportCards"></div><h3>近21天打卡</h3><div class="calendar" id="calendar"></div><h3>进阶标准</h3><div id="criteria"></div></div>
         <div class="card panel" id="plan"><h2>完整阶段计划</h2><div id="fullPlan"></div></div>
         <div class="card panel" id="library"><h2>动作库</h2><input class="search" id="q" placeholder="搜索动作，比如：前锯肌、死虫、肩胛、臀桥"><div id="lib"></div></div>
@@ -60,6 +72,10 @@
     </main>
     <p class="footer">医疗提醒：这不是诊断。若出现持续加重、麻木放射、明显无力、外伤后疼痛、发热等情况，应及时就医。</p>
   </div>
-  <script src="app.js?v=0714bundle"></script>
+  <script src="compat.js?v=0713z"></script>
+  <script src="app.js?v=0713z"></script>
+  <script src="week-label-fix.js?v=0713z"></script>
+  <script src="missing-actions.js?v=0713z"></script>
+  <script src="bind.js?v=0713z"></script>
 </body>
 </html>

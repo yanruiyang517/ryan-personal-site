@@ -181,7 +181,7 @@ jobs:
           }, 1600);
           NODE
           set -o pipefail
-          node /tmp/rehab-smoke.cjs 2>&1 | tee /tmp/rehab-smoke-output.txt
+          NODE_PATH="$PWD/node_modules" node /tmp/rehab-smoke.cjs 2>&1 | tee /tmp/rehab-smoke-output.txt
 
       - name: Upload smoke diagnostics
         if: always()

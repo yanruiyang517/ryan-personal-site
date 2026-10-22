@@ -549,6 +549,9 @@ dialog.modal::backdrop { background: rgb(36 43 31 / 38%); }
 .session-resolved { display: grid; justify-items: center; gap: 12px; padding: 30px 0; color: var(--accent); }
 .session-resolved p { font-size: 14px; }
 .input-error { color: var(--danger); margin-top: 10px; font-size: 13px; }
+.optional-score { margin: 0 0 18px; color: var(--muted); font-size: 13px; }
+.optional-score summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.optional-score .form-field { margin-top: 8px; }
 .sidebar { overflow-y: auto; }
 @media (min-width: 741px) and (max-height: 600px) {
   .sidebar { padding: 16px 14px; }

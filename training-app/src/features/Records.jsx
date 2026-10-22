@@ -13,6 +13,8 @@ import {
   shiftDay,
   STATUS_LABELS,
   prettyDay,
+  READINESS_LABELS,
+  FEELING_LABELS,
 } from "../lib/domain.js";
 import { exercises } from "../data.js";
 export default function Records({ data, onUpdate, error }) {
@@ -122,11 +124,21 @@ export default function Records({ data, onUpdate, error }) {
               )}
               <dl className="feedback-list">
                 <div>
-                  <dt>开始前 / 结束后</dt>
-                  <dd>
-                    {record.before ?? "未填"} / {record.after ?? "未填"}
-                  </dd>
+                  <dt>开始前状态</dt>
+                  <dd>{READINESS_LABELS[record.readiness || ""]}</dd>
                 </div>
+                <div>
+                  <dt>结束后感受</dt>
+                  <dd>{FEELING_LABELS[record.afterFeeling || ""]}</dd>
+                </div>
+                {(record.before !== null || record.after !== null) && (
+                  <div>
+                    <dt>数字痛感（开始前 / 结束后）</dt>
+                    <dd>
+                      {record.before ?? "未填"} / {record.after ?? "未填"}
+                    </dd>
+                  </div>
+                )}
                 <div>
                   <dt>第二天反应</dt>
                   <dd>
@@ -169,11 +181,29 @@ export default function Records({ data, onUpdate, error }) {
               if (onUpdate({ ...edit, updatedAt: Date.now() })) setEdit(null);
             }}
           >
-            <ScoreField
-              label="训练后的痛感（选填）"
-              value={edit.after}
-              onChange={(after) => setEdit({ ...edit, after })}
-            />
+            <label className="form-field">
+              结束后感受
+              <select
+                value={edit.afterFeeling || ""}
+                onChange={(e) =>
+                  setEdit({ ...edit, afterFeeling: e.target.value })
+                }
+              >
+                {Object.entries(FEELING_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <details className="optional-score">
+              <summary>数字痛感记录（选填）</summary>
+              <ScoreField
+                label="训练后的痛感"
+                value={edit.after}
+                onChange={(after) => setEdit({ ...edit, after })}
+              />
+            </details>
             <label className="form-field">
               第二天反应
               <select
@@ -190,12 +220,18 @@ export default function Records({ data, onUpdate, error }) {
               </select>
               {edit.date >= localDay() && <small>到第二天再回来填写。</small>}
             </label>
+            {edit.nextMorning === "worse" && (
+              <p className="callout">
+                下次先减量或轻活动，暂不进阶。持续加重或影响转头、抬手、睡眠时，安排现场评估。
+              </p>
+            )}
             <label className="form-field">
               备注
               <textarea
                 rows="4"
                 maxLength="1000"
                 value={edit.note}
+                placeholder="例如：抬臂更轻松、电脑前能舒服待多久。"
                 onChange={(e) => setEdit({ ...edit, note: e.target.value })}
               />
             </label>

@@ -131,7 +131,7 @@ export default function Today({
       <ExerciseRows plan={plan} onSelect={onSelect} sets={record?.sets} />
       <div className="today-footer">
         <p className="quiet-note">
-          疼痛明显时，先走动、换姿势；肩颈动作只在症状轻微时尝试。
+          不用给疼痛打分。动作轻松可控时先试起始量；今天明显更难受时，选轻活动或主动休息。
         </p>
         {isToday && !data.session && (
           <button className="text-button" onClick={onRest}>

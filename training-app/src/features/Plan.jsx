@@ -76,14 +76,20 @@ export default function Plan({ data, onSelect, navigate }) {
         </div>
       )}
       <section className="panel plan-guidance">
-        <h2>怎样知道今天练得合适</h2>
+        <h2>围绕自然体态，逐步变强</h2>
+        <p>
+          日常练颈部控制，加练日练肩胛活动和腿部力量，恢复条件满足后再加入划船。动作量是起点，不是必须完成的任务。
+        </p>
         <div className="two-column">
           <div>
-            <h3>观察当下和第二天</h3>
+            <h3>不用打分，看三个信号</h3>
+            <ol className="tips-list">
+              <li>动作能正常呼吸，不靠咬牙、憋气或明显扭身完成。</li>
+              <li>练后没有持续更难受，休息后能回到原来的状态。</li>
+              <li>第二天转头、抬手、睡眠和使用电脑没有更困难。</li>
+            </ol>
             <p>
-              这里只采用保守的起始量。当前痛感约 0–3
-              分时才尝试肩颈动作；出现新的不适就减小幅度或停止。结束后约 45–60
-              分钟应回到原来水平，次日不应更差。
+              同一剂量连续两次都稳定，再增加一个变量。出现加重就先减量或轻活动，暂不进阶。
             </p>
           </div>
           <div>
@@ -94,8 +100,11 @@ export default function Plan({ data, onSelect, navigate }) {
             </p>
           </div>
         </div>
+        <p>
+          每两周在相同机位、光线下复拍自然站姿和慢速抬臂，正常呼吸、自然站立，不刻意挺胸或夹紧肩胛。比较动作和日常活动是否更轻松，不追求固定的“标准姿势”。照片自行保存在手机即可。
+        </p>
         <p className="quiet-note">
-          这是活动管理与记录工具，不根据体态外观诊断疾病，也不保证仅靠训练解决所有疼痛。
+          网站按所选阶段显示预设安排，不会根据反馈自动升级。照片和动作外观不能用于确诊；这份计划不保证改变骨骼结构或消除所有疼痛。
         </p>
         <ExternalLink href="https://www.dynamichealth.nhs.uk/help-and-advice/shoulder-pain/">
           阅读 NHS 关于活动反应的建议

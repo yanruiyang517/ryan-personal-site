@@ -19,7 +19,7 @@ export default function Settings({
   const fileRef = useRef();
   const conditions = [
     "近期总体改善，明显疼痛发作减少",
-    "徒手活动没有痛性卡住或进行性加重",
+    "徒手活动可以正常呼吸，没有痛性卡住或进行性加重",
     "至少两次训练及第二天均稳定",
     "没有新麻木或明显无力",
   ];

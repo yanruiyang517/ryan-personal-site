@@ -1,67 +1,15 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111214">
-  <meta name="description" content="肩颈肩胛、腰背与臀腿康复训练动态计划、每日打卡、计时器、周报和进阶判断。">
-  <title>康复训练 Pro · 每日打卡系统</title>
-  <link rel="stylesheet" href="app.css?v=0714bundle">
-</head>
-<body class="tab-today experience-v4 mobile-v5">
-  <div class="app">
-    <header class="top">
-      <div class="brand"><div class="logo">康</div><div><h1>康复训练 Pro</h1><p>训练计划 · 计时 · 每日打卡</p></div></div>
-      <div class="actions"><button class="btn" id="darkBtn">深色/浅色</button><button class="btn" id="printBtn">打印</button><button class="btn primary" id="shareBtn">复制网址</button></div>
-    </header>
-    <nav class="nav" id="nav"></nav>
-    <section class="hero">
-      <section class="hero-stage-v4">
-        <div class="hero-copy-v4">
-          <div class="hero-kicker-v4">Today movement</div>
-          <h1 class="hero-title-v4">今天，完成比完美更重要。</h1>
-          <p class="hero-sub-v4" id="heroSubtitleV4">用稳定、自然的动作，把身体一点点练回来。只专注今天这一组。</p>
-          <div class="hero-actions-v4">
-            <button class="btn primary" type="button" data-v4-go="today">开始今天的训练</button>
-            <button class="btn secondary-v4" type="button" data-v4-go="timer">打开计时器</button>
-            <button class="btn secondary-v4" type="button" data-v4-go="record">完成后打卡</button>
-          </div>
-          <div class="hero-safety-v4">不追求疼痛和疲劳。出现刺痛、麻木、放射痛、卡住或明显无力时立即停止。</div>
-          <p id="coach" hidden>身体不适时不要为了连续打卡硬练。</p>
-        </div>
-        <div class="hero-visual-v4">
-          <div class="progress-orbit-v4" id="progressOrbitV4"><div><strong id="heroProgressV4">0%</strong><span>今日完成度</span></div></div>
-          <div class="hero-plan-v4">
-            <div><b id="heroWorkoutV4">今日训练</b><span>训练内容</span></div>
-            <div><b id="heroCountV4">0 个动作</b><span>动作数量</span></div>
-            <div><b id="heroMinutesV4">约 20 分钟</b><span>预计时间</span></div>
-          </div>
-        </div>
-        <div class="hero-metrics-v4 metrics">
-          <div class="metric"><b id="mToday">-</b><span>今天</span></div>
-          <div class="metric"><b id="mWeek">-</b><span>当前周</span></div>
-          <div class="metric"><b id="mPhase">-</b><span>当前阶段</span></div>
-          <div class="metric"><b id="mStreak">0天</b><span>连续打卡</span></div>
-          <div class="metric"><b id="mDone">0次</b><span>累计打卡</span></div>
-        </div>
-      </section>
-    </section>
-    <main class="layout">
-      <aside class="card side"><h3>训练周与设置</h3><div class="weeks" id="weeks"></div><hr style="border:none;border-top:1px solid var(--line);margin:14px 0"><label class="sub">计划起始日期</label><input id="startDate" class="search" type="date"><div class="tools"><button class="btn primary" id="saveStartBtn">保存起始日</button><button class="btn" id="todayBtn">回到今天</button></div></aside>
-      <section>
-        <div class="card panel active" id="today"><div class="days" id="days"></div><div class="head"><div><h2 id="wTitle">-</h2><p id="wDesc" class="sub"></p></div><span class="tag" id="phaseTag"></span></div><div class="progress"><div class="bar" id="doneBar"></div></div><div class="tools"><button class="btn green" id="completeAllBtn">本组全选完成</button><button class="btn" id="clearChecksBtn">清空动作勾选</button><button class="btn" id="openRecordBtn">完成后打卡</button></div><div id="exerciseList"></div></div>
-        <div class="card panel" id="timer"><h2>训练计时器</h2><div class="timer"><div class="box"><b>训练计时</b><div class="time" id="trainTime">00:00</div><button class="btn primary" id="trainTimerBtn">开始</button><button class="btn" id="trainResetBtn">归零</button></div><div class="box"><b>休息倒计时</b><div class="time" id="restTime">00:45</div><select id="restSec" class="search"><option value="30">30秒</option><option value="45" selected>45秒</option><option value="60">60秒</option><option value="90">90秒</option></select><button class="btn primary" id="restTimerBtn">开始</button><button class="btn" id="restResetBtn">重置</button></div><div class="box"><b>呼吸节奏</b><div class="time" id="breathText">吸气</div><p class="sub">4秒吸气 / 6秒呼气</p><button class="btn primary" id="breathBtn">开始</button></div></div></div>
-        <div class="card panel" id="record"><h2>每日打卡</h2><p class="sub">自由选择实际锻炼日期，完成后点击一键打卡。</p><div hidden><input type="checkbox" id="done"><div id="beforeScores"></div><div id="afterScores"></div><div id="flags"></div><textarea id="note"></textarea><div id="history"></div></div></div>
-        <div class="card panel" id="report"><h2>周报与训练进度</h2><div class="grid3" id="reportCards"></div><h3>近21天打卡</h3><div class="calendar" id="calendar"></div><h3>进阶标准</h3><div id="criteria"></div></div>
-        <div class="card panel" id="plan"><h2>完整阶段计划</h2><div id="fullPlan"></div></div>
-        <div class="card panel" id="library"><h2>动作库</h2><input class="search" id="q" placeholder="搜索动作，比如：泡沫轴、前锯肌、死虫、臀桥"><div id="lib"></div></div>
-        <div class="card panel" id="help"><h2>使用说明</h2><div class="grid2"><div class="box"><b>打卡保存在哪里？</b><p>保存在当前浏览器 localStorage。别人打开网页也能用，但数据不会同步到你这里。</p></div><div class="box"><b>如何换手机？</b><p>旧设备导出 JSON，新设备导入 JSON。</p></div><div class="box"><b>什么时候降级？</b><p>训练后不适明显增加、第二天更酸、疼痛超过48小时，下次减半或退回上一阶段。</p></div><div class="box"><b>什么时候进阶？</b><p>连续2次训练没有加重，且对应阶段标准多数达成，再增加次数、组数或进入下一阶段。</p></div></div></div>
-      </section>
-    </main>
-    <p class="footer">医疗提醒：这不是诊断。若出现持续加重、麻木放射、明显无力、外伤后疼痛、发热等情况，应及时就医。</p>
-  </div>
-  <script src="app.js?v=0714bundle"></script>
-  <script src="foam-roller-home.js?v=0801a"></script>
-  <script src="exercise-detail-upgrades.js?v=0726a"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f7f6f2" />
+    <meta name="description" content="MOVE 我的训练：在舒适的节奏里，记录每天的活动、跟练与身体反馈。" />
+    <title>MOVE · 我的训练</title>
+    <script type="module" crossorigin src="./assets/index-Chxvemmv.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DaxelwnM.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

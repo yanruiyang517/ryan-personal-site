@@ -1,55 +1,91 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Play, ExternalLink as LinkIcon } from "lucide-react";
 import { exercises } from "../data.js";
 import { doseLabel } from "../lib/domain.js";
 import { Modal, ExternalLink } from "./Common.jsx";
 export function Video({ exercise }) {
   const [loaded, setLoaded] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [connection, setConnection] = useState("waiting");
+  useEffect(() => {
+    if (!loaded) return;
+    setConnection("waiting");
+    const id = setTimeout(
+      () => setConnection((value) => (value === "waiting" ? "slow" : value)),
+      12000,
+    );
+    return () => clearTimeout(id);
+  }, [loaded, attempt]);
   const e = exercise;
   return (
     <>
       <div className="video-panel">
-        {loaded && e.youtube ? (
-          <iframe
-            className="video-frame"
-            title={`${e.name} 原始示范视频`}
-            src={`https://www.youtube-nocookie.com/embed/${e.youtube}?rel=0`}
-            allow="encrypted-media; picture-in-picture; fullscreen"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
-        ) : (
-          <div className="video-placeholder">
-            <Play />
-            <h3>
-              {e.youtube || e.externalVideo ? "查看动作示范" : "舒适地走一走"}
-            </h3>
-            <p>
-              {e.id === "reach"
-                ? "当前空手练习，请勿跟随视频加重量。"
-                : e.videoNote || "先看一遍，再按自己的节奏练习。"}
-            </p>
-            {e.youtube ? (
-              <button
-                className="secondary-button"
-                onClick={() => setLoaded(true)}
-              >
-                加载示范视频
-              </button>
-            ) : e.externalVideo ? (
-              <a
-                className="secondary-button"
-                href={e.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                在原站播放 <LinkIcon size={16} />
-              </a>
-            ) : null}
-          </div>
-        )}
+        <div className={e.youtube ? "video-stage" : undefined}>
+          {loaded && e.youtube ? (
+            <iframe
+              key={attempt}
+              className="video-frame"
+              title={`${e.name} 原始示范视频`}
+              src={`https://www.youtube-nocookie.com/embed/${e.youtube}?rel=0&playsinline=1`}
+              onLoad={() => setConnection("connected")}
+              onError={() => setConnection("slow")}
+              allow="encrypted-media; picture-in-picture; fullscreen"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          ) : (
+            <div className="video-placeholder">
+              <Play />
+              <h3>
+                {e.youtube || e.externalVideo ? "查看动作示范" : "舒适地走一走"}
+              </h3>
+              <p>
+                {e.id === "reach"
+                  ? "当前空手练习，请勿跟随视频加重量。"
+                  : e.videoNote || "先看一遍，再按自己的节奏练习。"}
+              </p>
+              {e.youtube ? (
+                <button
+                  className="secondary-button"
+                  onClick={() => setLoaded(true)}
+                >
+                  加载示范视频
+                </button>
+              ) : e.externalVideo ? (
+                <a
+                  className="secondary-button"
+                  href={e.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  在原站播放 <LinkIcon size={16} />
+                </a>
+              ) : null}
+            </div>
+          )}
+        </div>
         <div className="video-caption">来源：{e.source} · 第三方视频需联网</div>
       </div>
+      {e.youtube && loaded && (
+        <div className="video-tools">
+          <span role="status">
+            {connection === "waiting"
+              ? "正在连接播放器…"
+              : connection === "slow"
+                ? "连接较慢，可重试或打开原站。"
+                : "点击画面播放；空白或报错时可重试。"}
+          </span>
+          <button
+            className="text-button"
+            onClick={() => setAttempt((value) => value + 1)}
+          >
+            重新加载
+          </button>
+          <button className="text-button" onClick={() => setLoaded(false)}>
+            收起视频
+          </button>
+        </div>
+      )}
       <p className="video-fallback">
         <ExternalLink
           href={

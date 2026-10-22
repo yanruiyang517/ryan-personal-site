@@ -151,12 +151,34 @@ export function Modal({ title, onClose, children, wide = false }) {
   const ref = useRef();
   useEffect(() => {
     const d = ref.current;
+    const scroll = window.scrollY;
+    const route = location.hash;
+    const style = document.body.style;
+    const previous = Object.fromEntries(
+      ["overflow", "position", "top", "width", "paddingRight"].map((key) => [
+        key,
+        style[key],
+      ]),
+    );
+    const gap = Math.max(
+      0,
+      window.innerWidth - document.documentElement.clientWidth,
+    );
+    const padding =
+      parseFloat(getComputedStyle(document.body).paddingRight) || 0;
+    Object.assign(style, {
+      overflow: "hidden",
+      position: "fixed",
+      top: `-${scroll}px`,
+      width: "100%",
+      paddingRight: `${padding + gap}px`,
+    });
     d.showModal();
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     return () => {
       d.close();
-      document.body.style.overflow = prev;
+      Object.assign(style, previous);
+      if (location.hash === route)
+        window.scrollTo({ top: scroll, behavior: "instant" });
     };
   }, []);
   return (

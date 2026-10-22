@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   Pause,
@@ -18,13 +18,28 @@ import {
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { Modal, ScoreField } from "../components/Common.jsx";
 import { Video } from "../components/ExerciseDetail.jsx";
+import {
+  allSetsRecorded,
+  createSetEntry,
+  watchCountdown,
+} from "../lib/session.js";
 function Timer({ timer, item, mode }) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    setNow(Date.now());
-    if (timer.startedAt === null) return;
-    const id = setInterval(() => setNow(Date.now()), 250);
-    return () => clearInterval(id);
+    let stop = () => {};
+    const refresh = () => {
+      stop();
+      if (document.visibilityState === "visible")
+        stop = watchCountdown(timer, setNow);
+    };
+    refresh();
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("pageshow", refresh);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("pageshow", refresh);
+    };
   }, [timer]);
   const remaining = timerReading(timer, now);
   const nod = item.id === "nod" && mode === "exercise";
@@ -85,11 +100,25 @@ export default function Session({
 }) {
   const item = session.plan[session.index];
   const e = exercises[item.id];
+  const resolved = allSetsRecorded(session.plan, session.sets);
   const [actual, setActual] = useState(item.reps);
   const [weight, setWeight] = useState("");
-  const [finish, setFinish] = useState(null);
+  const [finish, setFinish] = useState(() => (resolved ? "normal" : null));
   const [after, setAfter] = useState(null);
   const [note, setNote] = useState("");
+  const actionTime = useRef(0);
+  const allowAction = () => {
+    const now = Date.now();
+    if (now - actionTime.current < 400) return false;
+    actionTime.current = now;
+    return true;
+  };
+  let inputError = "";
+  try {
+    createSetEntry(item, session.setIndex, "done", actual, weight);
+  } catch (e) {
+    inputError = e.message;
+  }
   const wake = useWakeLock(true, settings.wake);
   useEffect(() => {
     setActual(item.reps);
@@ -111,22 +140,8 @@ export default function Session({
     });
   }
   function record(state) {
-    const count = Number(actual);
-    const kg = weight === "" ? null : Number(weight);
-    if (
-      !Number.isInteger(count) ||
-      count < 0 ||
-      count > 200 ||
-      (kg !== null && (!Number.isFinite(kg) || kg < 0 || kg > 100))
-    )
-      return;
-    const entry = {
-      exerciseId: item.id,
-      set: session.setIndex,
-      reps: state === "done" ? count : 0,
-      state,
-      weight: kg,
-    };
+    if (resolved || !allowAction() || (state === "done" && inputError)) return;
+    const entry = createSetEntry(item, session.setIndex, state, actual, weight);
     const sets = [
       ...session.sets.filter(
         (s) => !(s.exerciseId === item.id && s.set === session.setIndex),
@@ -188,49 +203,61 @@ export default function Session({
           <p className="set-label">
             第 {session.setIndex} / {item.sets} 组 · {doseLabel(item)}
           </p>
-          <Timer timer={session.timer} item={item} mode={session.mode} />
+          {resolved ? (
+            <div className="session-resolved">
+              <Check size={32} />
+              <h2>组数已记录</h2>
+              <p>可以直接保存本次记录，不用重复完成最后一组。</p>
+            </div>
+          ) : (
+            <Timer timer={session.timer} item={item} mode={session.mode} />
+          )}
           <div className="session-actions">
-            <button className="secondary-button" onClick={toggle}>
-              {session.timer.startedAt === null ? (
-                <Play size={18} />
-              ) : (
-                <Pause size={18} />
-              )}{" "}
-              {session.timer.startedAt === null ? "开始计时" : "暂停计时"}
-            </button>
-            {session.mode === "rest" ? (
+            {resolved ? (
               <button
                 className="primary-button"
-                onClick={() =>
-                  update({
-                    ...session,
-                    mode: "exercise",
-                    timer: makeTimer(item.seconds, true),
-                  })
-                }
+                onClick={() => setFinish("normal")}
               >
-                准备好了，开始下一组
+                查看并保存本次记录
               </button>
             ) : (
-              <button
-                className="primary-button"
-                onClick={() => record("done")}
-                disabled={
-                  !Number.isInteger(Number(actual)) ||
-                  Number(actual) < 0 ||
-                  Number(actual) > 200 ||
-                  (weight !== "" &&
-                    (!Number.isFinite(Number(weight)) ||
-                      Number(weight) < 0 ||
-                      Number(weight) > 100))
-                }
-              >
-                <Check size={18} />
-                完成这一组
-              </button>
+              <>
+                <button className="secondary-button" onClick={toggle}>
+                  {session.timer.startedAt === null ? (
+                    <Play size={18} />
+                  ) : (
+                    <Pause size={18} />
+                  )}{" "}
+                  {session.timer.startedAt === null ? "开始计时" : "暂停计时"}
+                </button>
+                {session.mode === "rest" ? (
+                  <button
+                    className="primary-button"
+                    onClick={() => {
+                      if (!allowAction()) return;
+                      update({
+                        ...session,
+                        mode: "exercise",
+                        timer: makeTimer(item.seconds, true),
+                      });
+                    }}
+                  >
+                    准备好了，开始下一组
+                  </button>
+                ) : (
+                  <button
+                    className="primary-button"
+                    onClick={() => record("done")}
+                    disabled={!!inputError}
+                  >
+                    <Check size={18} />
+                    完成这一组
+                  </button>
+                )}
+              </>
             )}
           </div>
-          {session.mode === "exercise" && (
+          {!resolved && session.mode === "exercise" && (
             <div className="actual-fields">
               <label className="form-field">
                 实际
@@ -244,6 +271,8 @@ export default function Session({
                   min="0"
                   max="200"
                   inputMode="numeric"
+                  aria-invalid={!!inputError}
+                  aria-describedby={inputError ? "actual-error" : undefined}
                   value={actual}
                   onChange={(event) => setActual(event.target.value)}
                 />
@@ -263,17 +292,29 @@ export default function Session({
               )}
             </div>
           )}
+          {!resolved && inputError && (
+            <p id="actual-error" className="input-error" role="status">
+              {inputError}
+            </p>
+          )}
           <div className="session-secondary">
-            <button className="text-button" onClick={() => record("skipped")}>
-              <SkipForward size={16} />
-              跳过这一组
-            </button>
-            <button
-              className="text-button"
-              onClick={() => finishRequest("normal")}
-            >
-              结束本次训练
-            </button>
+            {!resolved && (
+              <>
+                <button
+                  className="text-button"
+                  onClick={() => record("skipped")}
+                >
+                  <SkipForward size={16} />
+                  跳过这一组
+                </button>
+                <button
+                  className="text-button"
+                  onClick={() => finishRequest("normal")}
+                >
+                  结束本次训练
+                </button>
+              </>
+            )}
             <button
               className="text-button danger-text"
               onClick={() => finishRequest("stopped")}
@@ -284,8 +325,12 @@ export default function Session({
           <div className="wake-status">
             <Monitor size={16} />
             <span>屏幕常亮：{wake.status}</span>
-            {settings.wake && wake.status !== "已开启" && (
-              <button className="text-button" onClick={wake.request}>
+            {settings.wake && wake.supported && wake.status !== "已开启" && (
+              <button
+                className="text-button"
+                onClick={wake.request}
+                disabled={wake.status === "正在开启…"}
+              >
                 重试
               </button>
             )}
@@ -296,7 +341,7 @@ export default function Session({
         </section>
         <aside className="session-side stack">
           <p className="callout">{e.cue}</p>
-          <Video key={item.id} exercise={{ ...e, id: item.id }} />
+          {!finish && <Video key={item.id} exercise={{ ...e, id: item.id }} />}
           <button
             className="text-button"
             onClick={() => {

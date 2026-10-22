@@ -76,7 +76,9 @@ export const exercises = {
     source: "Cornell University · Physical Therapy",
     sourceUrl:
       "https://vod.video.cornell.edu/media/Supine%2BSerratus%2BPunch/1_gl8e29nh",
-    externalVideo: true,
+    // Official player returned by Cornell's public oEmbed endpoint.
+    embedUrl:
+      "https://cdnapisec.kaltura.com/p/520801/embedPlaykitJs/uiconf_id/56047972?iframeembed=true&entry_id=1_gl8e29nh&config%5Bprovider%5D=%7B%22widgetId%22%3A%221_tyv5cw0w%22%7D&config%5Bplayback%5D=%7B%22startTime%22%3A0%7D",
     steps: [
       "仰卧，头有舒服的支撑。手臂朝向天花板，肘部保持轻松。",
       "手向天花板轻轻够远一点，让肩胛骨略微离开床面或地面。",

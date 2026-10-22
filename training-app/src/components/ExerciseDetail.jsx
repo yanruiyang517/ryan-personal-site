@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
-import { Play, ExternalLink as LinkIcon } from "lucide-react";
+import { Play } from "lucide-react";
 import { exercises } from "../data.js";
 import { doseLabel } from "../lib/domain.js";
 import { Modal, ExternalLink } from "./Common.jsx";
 export function Video({ exercise }) {
-  const [loaded, setLoaded] = useState(false);
+  const playerUrl = exercise.youtube
+    ? `https://www.youtube-nocookie.com/embed/${exercise.youtube}?rel=0&playsinline=1`
+    : exercise.embedUrl;
+  const [loaded, setLoaded] = useState(!!playerUrl);
   const [attempt, setAttempt] = useState(0);
   const [connection, setConnection] = useState("waiting");
   useEffect(() => {
@@ -20,13 +23,13 @@ export function Video({ exercise }) {
   return (
     <>
       <div className="video-panel">
-        <div className={e.youtube ? "video-stage" : undefined}>
-          {loaded && e.youtube ? (
+        <div className={playerUrl ? "video-stage" : undefined}>
+          {loaded && playerUrl ? (
             <iframe
               key={attempt}
               className="video-frame"
               title={`${e.name} 原始示范视频`}
-              src={`https://www.youtube-nocookie.com/embed/${e.youtube}?rel=0&playsinline=1`}
+              src={playerUrl}
               onLoad={() => setConnection("connected")}
               onError={() => setConnection("slow")}
               allow="encrypted-media; picture-in-picture; fullscreen"
@@ -37,36 +40,30 @@ export function Video({ exercise }) {
             <div className="video-placeholder">
               <Play />
               <h3>
-                {e.youtube || e.externalVideo ? "查看动作示范" : "舒适地走一走"}
+                {playerUrl ? "查看动作示范" : "舒适地走一走"}
               </h3>
               <p>
                 {e.id === "reach"
                   ? "当前空手练习，请勿跟随视频加重量。"
                   : e.videoNote || "先看一遍，再按自己的节奏练习。"}
               </p>
-              {e.youtube ? (
+              {playerUrl ? (
                 <button
                   className="secondary-button"
                   onClick={() => setLoaded(true)}
                 >
-                  加载示范视频
+                  显示示范视频
                 </button>
-              ) : e.externalVideo ? (
-                <a
-                  className="secondary-button"
-                  href={e.sourceUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  在原站播放 <LinkIcon size={16} />
-                </a>
               ) : null}
             </div>
           )}
         </div>
-        <div className="video-caption">来源：{e.source} · 第三方视频需联网</div>
+        <div className="video-caption">来源：{e.source}{playerUrl && " · 本页播放，需联网"}</div>
       </div>
-      {e.youtube && loaded && (
+      {e.id === "reach" && (
+        <p className="quiet-note">视频使用哑铃；你当前双手空着，只参考肩胛移动方向。</p>
+      )}
+      {playerUrl && loaded && (
         <div className="video-tools">
           <span role="status">
             {connection === "waiting"
@@ -94,7 +91,7 @@ export function Video({ exercise }) {
               : e.sourceUrl
           }
         >
-          {e.youtube || e.externalVideo
+          {playerUrl
             ? "播放不了？打开原始来源"
             : "阅读官方步行指南"}
         </ExternalLink>

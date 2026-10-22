@@ -8,6 +8,17 @@ export const EXERCISE_IDS = [
   "row",
 ];
 export const PHASE_NAMES = ["舒适活动", "逐步恢复", "回归力量"];
+export const READINESS_LABELS = {
+  "": "未记录",
+  ready: "可以轻松活动",
+  gentle: "今天先轻活动",
+};
+export const FEELING_LABELS = {
+  "": "待观察",
+  better: "更轻松",
+  same: "和平时差不多",
+  worse: "更难受",
+};
 export function localDay(date = new Date()) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Shell, Modal, ScoreField } from "./components/Common.jsx";
+import { Shell, Modal } from "./components/Common.jsx";
 import { ExerciseDetail } from "./components/ExerciseDetail.jsx";
 import Today from "./features/Today.jsx";
 import Plan from "./features/Plan.jsx";
@@ -42,7 +42,7 @@ export default function App() {
   const [date, setDate] = useState(localDay());
   const [detail, setDetail] = useState(null);
   const [preflight, setPreflight] = useState(null);
-  const [before, setBefore] = useState(null);
+  const [readiness, setReadiness] = useState("");
   const [newSymptoms, setNewSymptoms] = useState(false);
   const [replace, setReplace] = useState(false);
   const [rest, setRest] = useState(false);
@@ -150,14 +150,14 @@ export default function App() {
       navigate("session");
       return;
     }
-    setBefore(null);
+    setReadiness("");
     setNewSymptoms(false);
     setReplace(false);
     setPreflight({ items });
   }
   function begin() {
-    if (newSymptoms) return;
-    const gentle = before !== null && before > 3;
+    if (newSymptoms || !readiness) return;
+    const gentle = readiness === "gentle";
     const plan = gentle
       ? planFor(localDay(), data.settings, true)
       : preflight.items || planFor(localDay(), data.settings);
@@ -167,7 +167,8 @@ export default function App() {
       index: 0,
       setIndex: 1,
       sets: [],
-      before,
+      before: null,
+      readiness,
       startedAt: Date.now(),
       mode: "exercise",
       timer: makeTimer(plan[0].seconds),
@@ -178,7 +179,7 @@ export default function App() {
       navigate("session");
     }
   }
-  function finish(reason, after, note) {
+  function finish(reason, after, note, afterFeeling) {
     const s = dataRef.current.session;
     if (!s) return;
     const record = {
@@ -188,6 +189,8 @@ export default function App() {
       sets: s.sets,
       before: s.before,
       after,
+      readiness: s.readiness || "",
+      afterFeeling,
       nextMorning: "",
       note,
       updatedAt: Date.now(),
@@ -335,11 +338,20 @@ export default function App() {
       )}{" "}
       {preflight && (
         <Modal title="先看看今天的状态" onClose={() => setPreflight(null)}>
-          <ScoreField
-            label="现在的颈肩痛感（0–10，可不填）"
-            value={before}
-            onChange={setBefore}
-          />
+          <p className="quiet-note">
+            不用给疼痛打分，选一个最接近今天的状态。拿不准时，先选轻活动。
+          </p>
+          <label className="form-field">
+            今天的活动状态
+            <select
+              value={readiness}
+              onChange={(e) => setReadiness(e.target.value)}
+            >
+              <option value="">请选择</option>
+              <option value="ready">能轻松转头、抬手，先试今天的起始量</option>
+              <option value="gentle">今天明显更难受或活动费力，先轻活动</option>
+            </select>
+          </label>
           <label className="setting-row">
             <input
               type="checkbox"
@@ -352,13 +364,13 @@ export default function App() {
             <p className="callout">
               今天先不要训练，建议及时联系专业人员。突发明显无力、行走不稳或严重头痛等应尽快就医。
             </p>
-          ) : before !== null && before > 3 ? (
+          ) : readiness === "gentle" ? (
             <p className="callout">
               今天先只安排舒适步行。若步行也不舒服，可关闭此窗口，选择主动休息。
             </p>
           ) : (
             <p className="quiet-note">
-              肩颈动作只在症状轻微、动作本身舒服时尝试。可以随时少做、跳过或停止；不必把计划做满。
+              练习时正常呼吸，不需要咬牙或扭身完成。动作使不适持续增加时，减量、跳过或停止。
             </p>
           )}
           {data.records[localDay()] && (
@@ -380,10 +392,14 @@ export default function App() {
           )}
           <button
             className="primary-button"
-            disabled={newSymptoms || (!!data.records[localDay()] && !replace)}
+            disabled={
+              !readiness ||
+              newSymptoms ||
+              (!!data.records[localDay()] && !replace)
+            }
             onClick={begin}
           >
-            {before !== null && before > 3 ? "开始舒适步行" : "进入跟练"}
+            {readiness === "gentle" ? "开始舒适步行" : "进入跟练"}
           </button>
         </Modal>
       )}

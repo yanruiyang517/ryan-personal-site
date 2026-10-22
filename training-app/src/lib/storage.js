@@ -4,6 +4,8 @@ import {
   localDay,
   pauseTimer,
   sessionStatus,
+  READINESS_LABELS,
+  FEELING_LABELS,
 } from "./domain.js";
 export const KEY = "move.personal.v1";
 export const LEGACY_KEYS = [
@@ -64,6 +66,11 @@ function day(v) {
 }
 function score(v) {
   return v === null ? null : num(v, 0, 10);
+}
+function feedback(v, labels) {
+  if (v === undefined) return "";
+  if (typeof v !== "string" || !Object.hasOwn(labels, v)) fail();
+  return v;
 }
 function items(v) {
   if (!Array.isArray(v) || v.length > 7 || v.length < 1) fail();
@@ -144,6 +151,8 @@ export function validateData(value) {
       sets: setList(r.sets, plan),
       before: score(r.before),
       after: score(r.after),
+      readiness: feedback(r.readiness, READINESS_LABELS),
+      afterFeeling: feedback(r.afterFeeling, FEELING_LABELS),
       nextMorning: str(r.nextMorning, 20),
       note: str(r.note),
       updatedAt: num(r.updatedAt, 0, 1e15),
@@ -168,6 +177,7 @@ export function validateData(value) {
       setIndex: int(x.setIndex, 1, plan[x.index].sets),
       sets: setList(x.sets, plan),
       before: score(x.before),
+      readiness: feedback(x.readiness, READINESS_LABELS),
       mode: x.mode,
       startedAt: num(x.startedAt, 0, 1e15),
       timer: {

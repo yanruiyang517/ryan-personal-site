@@ -14,6 +14,7 @@ import {
   makeTimer,
   clockLabel,
   doseLabel,
+  FEELING_LABELS,
 } from "../lib/domain.js";
 import { useWakeLock } from "../lib/useWakeLock.js";
 import { Modal, ScoreField } from "../components/Common.jsx";
@@ -105,6 +106,7 @@ export default function Session({
   const [weight, setWeight] = useState("");
   const [finish, setFinish] = useState(() => (resolved ? "normal" : null));
   const [after, setAfter] = useState(null);
+  const [afterFeeling, setAfterFeeling] = useState("");
   const [note, setNote] = useState("");
   const actionTime = useRef(0);
   const allowAction = () => {
@@ -369,14 +371,35 @@ export default function Session({
           <form
             onSubmit={(ev) => {
               ev.preventDefault();
-              onFinish(finish, after, note);
+              onFinish(finish, after, note, afterFeeling);
             }}
           >
-            <ScoreField
-              label="结束后的痛感（选填）"
-              value={after}
-              onChange={setAfter}
-            />
+            <label className="form-field">
+              和开始前相比，现在感觉如何？（选填）
+              <select
+                value={afterFeeling}
+                onChange={(e) => setAfterFeeling(e.target.value)}
+              >
+                {Object.entries(FEELING_LABELS).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            {afterFeeling === "worse" && (
+              <p className="callout">
+                先不加量，观察休息后是否恢复；下次减小幅度或次数。明显不适持续或影响日常活动时，寻求专业评估。
+              </p>
+            )}
+            <details className="optional-score">
+              <summary>数字痛感记录（选填）</summary>
+              <ScoreField
+                label="结束后的痛感"
+                value={after}
+                onChange={setAfter}
+              />
+            </details>
             <label className="form-field">
               一句备注（选填）
               <textarea

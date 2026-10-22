@@ -78,6 +78,11 @@ export default function App() {
           return;
       }
       location.hash = next;
+      if (next !== route) {
+        setDetail(null);
+        setPreflight(null);
+        setRest(false);
+      }
       setRoute(next);
       window.scrollTo({ top: 0, behavior: "instant" });
     },
@@ -105,6 +110,11 @@ export default function App() {
           location.hash = "session";
           return;
         }
+      }
+      if (next !== route) {
+        setDetail(null);
+        setPreflight(null);
+        setRest(false);
       }
       setRoute(next);
       window.scrollTo({ top: 0, behavior: "instant" });
